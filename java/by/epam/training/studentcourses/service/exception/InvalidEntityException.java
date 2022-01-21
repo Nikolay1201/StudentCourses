@@ -1,7 +1,7 @@
 package by.epam.training.studentcourses.service.exception;
 
 public class InvalidEntityException extends ServiceException {
-	private Object entity;
+	private final Object entity;
 	
 	public InvalidEntityException(Object entity, String message) {
 		super(message);

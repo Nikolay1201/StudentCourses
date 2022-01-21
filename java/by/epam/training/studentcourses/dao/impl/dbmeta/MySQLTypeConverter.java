@@ -9,17 +9,16 @@ import javax.lang.model.type.UnknownTypeException;
 
 public class MySQLTypeConverter {
 	
+	private MySQLTypeConverter() {}
+	
 	public static boolean isMySQLDateType(Class<?> cls) {
-		if (cls == Double.class ||
+		return (cls == Double.class ||
 			cls == String.class ||
 			cls == Integer.class ||
-			cls == LocalDateTime.class) {
-			return true;
-		}
-		return false;
+			cls == LocalDateTime.class);
 	}
 	
-	public static Class<?> mySQLDateTypeToInternalDateType(int dbDataType) throws UnknownTypeException {
+	public static Class<?> mySQLDataTypeToInternalDataType(int dbDataType) throws UnknownTypeException {
 		switch (dbDataType) {
 		case (java.sql.Types.DOUBLE):
 			return Double.class;
@@ -45,7 +44,7 @@ public class MySQLTypeConverter {
 	}
 	
 	public static Integer toInternalInt(int integerValue) {
-		return new Integer(integerValue);
+		return Integer.valueOf(integerValue);
 	}
 	
 	public static int toMySQLInt(Integer integerValue) {
@@ -53,7 +52,7 @@ public class MySQLTypeConverter {
 	}
 	
 	public static Double toInternalDouble(double doubleValue) {
-		return new Double(doubleValue);
+		return Double.valueOf(doubleValue);
 	}
 	
 	public static double toMySQLDouble(Double doubleValue) {
@@ -77,12 +76,11 @@ public class MySQLTypeConverter {
 	}
 
 	public static Boolean toInternalBool(boolean bool) {
-		return new Boolean(bool);
+		return Boolean.valueOf(bool);
 	}	
 	
 	public static boolean toMySQLBool(Boolean bool) {
 		return bool.booleanValue();
 	}
-	
 
 }

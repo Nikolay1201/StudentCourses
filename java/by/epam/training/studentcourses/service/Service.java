@@ -6,4 +6,9 @@ public interface Service {
 	
 	public void init() throws ServiceException;
 	public void close() throws ServiceException;
+	public UserService getUserService();
+	public CourseService getCourseService();
+	public CoursePlanService getCourseplanService();
+	public LessonService getLessonService();
+
 }

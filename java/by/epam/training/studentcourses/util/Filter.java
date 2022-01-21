@@ -57,15 +57,15 @@ public class Filter {
 	}
 	
 	public String getStringRepr() {
-		if (filterList.size() == 0) {
+		if (filterList.isEmpty()) {
 			return "[empty]";
 		}
-		String str = "";
+		StringBuilder str = new StringBuilder();
 		for (int i = 0; i < filterList.size(); i ++) {
-			str += String.format("%s %s %s\n", filterList.get(i).getAttrName(), 
-					filterList.get(i).getType().getTextRepr(), filterList.get(i).getAttrValue());
+			str.append(String.format("%s %s %s%n", filterList.get(i).getAttrName(), 
+					filterList.get(i).getType().getStringRepr(), filterList.get(i).getAttrValue()));
 		}
-		return str;
+		return str.toString();
 	}
 	
 	

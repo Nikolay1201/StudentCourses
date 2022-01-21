@@ -9,7 +9,7 @@ import by.epam.training.studentcourses.util.entity.Course;
 
 public class CourseValidatorImpl implements EntityValidator<Course> {
 	
-	private static final String nameRegExp = "[a-zA-Z.,-]";
+	private static final String NAME_REG_EXP = "[a-zA-Z.,-]";
 	
 	@Override 
 	public TableAttr validate(Course course) {
@@ -20,6 +20,6 @@ public class CourseValidatorImpl implements EntityValidator<Course> {
 	}
 		
 	private boolean validateName(String name) {
-		return Pattern.matches(nameRegExp, name);
+		return Pattern.matches(NAME_REG_EXP, name);
 	}
 }

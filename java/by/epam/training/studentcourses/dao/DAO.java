@@ -8,7 +8,7 @@ public interface DAO {
 	public void close() throws DAOException;
 	public UserDAO getUserDAO();
 	public CourseDAO getCourseDAO();
-	public CoursePlanDAO getCourseplanDAO();
+	public CoursePlanDAO getCoursePlanDAO();
 	public LessonDAO getLessonDAO();
 	
 }

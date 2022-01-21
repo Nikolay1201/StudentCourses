@@ -20,16 +20,16 @@ import by.epam.training.studentcourses.util.Identifiable;
 import by.epam.training.studentcourses.util.TableAttr;
 
 
-abstract public class EntityAbstractDAO<T extends Identifiable> implements EntityDAO<T> {
+public abstract class EntityAbstractDAO<T extends Identifiable> implements EntityDAO<T> {
 	
 	private String insertPrepStatement;
 	private String deleteByIdPrepStatement;
 	private TableAttr idAttr;
 	private String tableName;
-	private TableAttr tableAttributes[];
+	private TableAttr[] tableAttributes;
 	private ConnectionPool connectionPool;
 	
-	public EntityAbstractDAO(String tableName, TableAttr[] tableAttributes, TableAttr idAttr) {
+	protected EntityAbstractDAO(String tableName, TableAttr[] tableAttributes, TableAttr idAttr) {
 		this.tableName = tableName;
 		this.tableAttributes = tableAttributes;
 		this.idAttr = idAttr;
@@ -40,38 +40,36 @@ abstract public class EntityAbstractDAO<T extends Identifiable> implements Entit
 
 	@Override
 	public void add(List<T> entityList) throws DAOException {
-		if (entityList.size() == 0) {
+		if (entityList.isEmpty()) {
 			return;
 		}
 		Connection conn = null;
+		PreparedStatement ps = null;
 		try {
-			conn = connectionPool.getConnection();
-			PreparedStatement ps = conn.prepareStatement(insertPrepStatement);
-			for (T entity : entityList) {
-				if (!validateEntityForInsert(entity)) {
-					throw new InvalidEntityException(entity);
-				}
-				entity.setId(null);
-				fillPrepStatementWithResultSet(entity, ps, false);
-				System.out.println(ps.toString());
-				ps.addBatch();
-				//LOGGER : log ps.toString();
-			}
-			ps.executeBatch();
-			conn.commit();
-		} catch (SQLException e) {
 			try {
-				if (conn != null) {
-					conn.rollback();
+				conn = connectionPool.getConnection();
+				ps = conn.prepareStatement(insertPrepStatement);
+				for (T entity : entityList) {
+					if (!validateEntityForInsert(entity)) {
+						throw new InvalidEntityException(entity);
+					}
+					entity.setId(null);
+					fillPrepStatementWithResultSet(entity, ps, false);
+					System.out.println(ps.toString()); //LOGGER : log ps.toString();
+					ps.addBatch();
 				}
-			} catch (SQLException e1) {
-				throw new InternalDAOException(e1);
+				ps.executeBatch();
+				conn.commit();
+			} finally {
+				if (conn != null) {
+					connectionPool.releaseConnection(conn);
+				}
+				if (ps != null) {
+					ps.close();
+				}
 			}
+		} catch(SQLException e) {
 			throw new InternalDAOException(e);
-		} finally {
-			if (conn != null) {
-				connectionPool.releaseConnection(conn);
-			}
 		}
 	}
 
@@ -107,14 +105,13 @@ abstract public class EntityAbstractDAO<T extends Identifiable> implements Entit
 
 	@Override
 	public void update(List<T> entityList) throws DAOException {
-		if (entityList.size() == 0) {
+		if (entityList.isEmpty()) {
 			return;
 		}
 		Connection conn = null;
 		try {
 			conn = connectionPool.getConnection();
 			PreparedStatement ps = null;
-			String prepStStr;
 			boolean[] nullAttributesStates;
 			for (T entity : entityList) {
 				if (entity.getId() == null) {
@@ -150,7 +147,7 @@ abstract public class EntityAbstractDAO<T extends Identifiable> implements Entit
 					conn.rollback();
 				}
 			} catch (SQLException e1) {
-				throw new InternalDAOException(e1);
+				//LOGGER
 			}
 			throw new InternalDAOException(e);
 		} finally {
@@ -161,34 +158,40 @@ abstract public class EntityAbstractDAO<T extends Identifiable> implements Entit
 
 	}
 
-	@Override @Deprecated
+	@Override @Deprecated(forRemoval = false)
 	public void deleteCascade(List<T> entityList) throws DAOException {
-		if (entityList.size() == 0) {
+		if (entityList.isEmpty()) {
 			return;
 		}
 		Connection conn = null;
+		PreparedStatement ps = null;
 		try {
-			conn = connectionPool.getConnection();
-			PreparedStatement ps = conn.prepareStatement(deleteByIdPrepStatement);
-			for (T entity : entityList) {
-				if (entity.getId() == null) {
-					conn.rollback();
-					throw new InvalidEntityException(entity, 
-							DBErrorMessages.getEntityDoesntContainIdMessage(entity));
+			try {
+				conn = connectionPool.getConnection();
+				ps = conn.prepareStatement(deleteByIdPrepStatement);
+				for (T entity : entityList) {
+					if (entity.getId() == null) {
+						conn.rollback();
+						throw new InvalidEntityException(entity, 
+								DBErrorMessages.getEntityDoesntContainIdMessage(entity));
+					}
+					ps.setInt(1, entity.getId());
+					System.out.println(ps.toString());
+					ps.addBatch();
 				}
-				ps.setInt(1, entity.getId());
-				System.out.println(ps.toString());
-				ps.addBatch();
+				ps.executeBatch();
+				conn.commit(); //IT WORKS WITHOUT COMMIT!??? how
+				//LOGGER
+			} finally {
+				if (ps != null) {
+					ps.close();
+				}
+				if (conn != null) {
+					connectionPool.releaseConnection(conn);
+				}
 			}
-			ps.executeBatch();
-			conn.commit(); //IT WORKS WITHOUT COMMIT!??? how
-			//LOGGER
 		} catch (SQLException e) {
 			throw new InternalDAOException(e);
-		} finally {
-			if (conn != null) {
-				connectionPool.releaseConnection(conn);
-			}
 		}
 	}
 	

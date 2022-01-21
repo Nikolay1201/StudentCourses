@@ -9,7 +9,7 @@ import by.epam.training.studentcourses.util.entity.Lesson;
 
 public class LessonValidatorImpl implements EntityValidator<Lesson> {
 	
-	private static final int maxPlannablePeriodInMonth = 6;
+	private static final int MAX_PLANNABLE_PERIOD_IN_MONTHS = 6;
 	
 	@Override
 	public TableAttr validate(Lesson lesson) {
@@ -28,6 +28,6 @@ public class LessonValidatorImpl implements EntityValidator<Lesson> {
 	
 	private boolean validateStartTime(LocalDateTime startTime) {
 		return (startTime.compareTo(LocalDateTime.now()) >= 0 &&
-				startTime.compareTo(LocalDateTime.now().minusMonths(maxPlannablePeriodInMonth)) <= 0);
+				startTime.compareTo(LocalDateTime.now().minusMonths(MAX_PLANNABLE_PERIOD_IN_MONTHS)) <= 0);
 	}
 }

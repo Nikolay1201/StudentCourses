@@ -3,7 +3,8 @@ package by.epam.training.studentcourses.dao.impl.pool;
 import by.epam.training.studentcourses.util.constant.MySQLDBParams;
 
 public class ConnectionPoolFactory {
-	public static ConnectionPool instance;
+	
+	private static final ConnectionPool instance;
 	
 	static {
 		instance = new ConnectionPoolImpl();

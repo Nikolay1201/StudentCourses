@@ -7,4 +7,6 @@ public class ErrorMessages {
 			"Свойства создаваемого пользова заданы неверно, повторите попытку";
 	public static final String INVALID_SEARCH_USER_PARAMETERS = 
 			"Свойства пользователя введены некорректны, повторите попытку";
+	
+	private ErrorMessages() {}
 }

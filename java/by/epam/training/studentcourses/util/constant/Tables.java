@@ -2,7 +2,7 @@ package by.epam.training.studentcourses.util.constant;
 
 import by.epam.training.studentcourses.util.TableAttr;
 
-public final class Tables {
+public class Tables {
 	
 //	static {
 //		Tables.tableNames = new String[Tables.values().length];
@@ -29,6 +29,9 @@ public final class Tables {
 	
 	public static class Users {
 		public static final String tableName = "users";
+		
+		private Users() {}
+		
 		public static enum Attr implements TableAttr {
 			USER_ID("user_id"),
 			ROLE_ID("role_id"),
@@ -59,6 +62,9 @@ public final class Tables {
 	
 	public static class Courses {
 		public static final String tableName = "courses";
+		
+		private Courses() {}
+		
 		public static enum Attr implements TableAttr {
 			COURSE_ID("course_id"),
 			NAME("name"),
@@ -81,6 +87,9 @@ public final class Tables {
 	
 	public static class CoursesPlans {
 		public static final String tableName = "courses_plans";
+		
+		private CoursesPlans() {}
+		
 		public static enum Attr implements TableAttr {
 			COURSE_PLAN_ID("course_plan_id"),
 			COURSE_ID("course_id"),
@@ -103,6 +112,9 @@ public final class Tables {
 	
 	public static class Lessons {
 		public static final String tableName = "lessons";
+		
+		private Lessons() {}
+		
 		public static enum Attr implements TableAttr {
 			LESSON_ID("lesson_id"),
 			COURSE_PLAN_ID("courses_plan"),
@@ -123,6 +135,7 @@ public final class Tables {
 			}
 		}
 	}
-		
+	
+	private Tables() {}		
 	
 }

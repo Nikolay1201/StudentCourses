@@ -1,6 +1,6 @@
-package by.epam.training.studentcourses.dao.exception;
+package by.epam.training.studentcourses.service.exception;
 
-public class EntityAlreadyExistsException extends DAOException {
+public class EntityAlreadyExistsException extends ServiceException {
 	private final Object entity;
 	
 	public EntityAlreadyExistsException(Object entity) {

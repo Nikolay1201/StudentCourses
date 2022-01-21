@@ -12,12 +12,12 @@ import by.epam.training.studentcourses.util.Filter;
 import by.epam.training.studentcourses.util.Identifiable;
 import by.epam.training.studentcourses.util.TableAttr;
 
-abstract public class EntityCRUDAbstractService<T extends Identifiable> implements EntityCRUDService<T> {
+public abstract class EntityCRUDAbstractService<T extends Identifiable> implements EntityCRUDService<T> {
 	
-	public EntityDAO<T> dao;
-	public EntityValidator<T> validator;
+	private EntityDAO<T> dao;
+	private EntityValidator<T> validator;
 	
-	public EntityCRUDAbstractService(EntityDAO<T> entityDAO, EntityValidator<T> validator) {
+	protected EntityCRUDAbstractService(EntityDAO<T> entityDAO, EntityValidator<T> validator) {
 		this.dao = entityDAO;
 		this.validator = validator;
 	}

@@ -24,7 +24,7 @@ public class ServerTest {
 	private static CourseDAO cd = DAOFactory.getInstance().getCourseDAO();
 
 	//EXAMPLE
-	public static void main(String[] args) throws ServiceException, DAOException {
+	public static void main(String[] args) throws DAOException {
 		DAOFactory.getInstance().init();
 		updateCouseTest();
 		DAOFactory.getInstance().close();

@@ -15,7 +15,7 @@ public class DBErrorMessages {
 	}
 	
 	public static String getFilterDoesntMatchTableMessage(String tableName, Filter filter) {
-		return String.format("The following filter doesn't matches the table `%s`\n",
+		return String.format("The following filter doesn't matches the table `%s`%n%s", 
 				tableName, filter.getStringRepr());
 	}
 	
@@ -23,6 +23,12 @@ public class DBErrorMessages {
 		return String.format("The entity of %s class doesn't contain value of the ID attribute, "
 				+ "impossible to identify the entity in the table", entity.getClass().getName());
 	}
+	
+	public static String getUnsupportedTypeEncounderedMessage(String typeName) {
+		return "Unknown type \"" + typeName + "\"";
+	}
+	
+	private DBErrorMessages() {}
 	
 	
 }

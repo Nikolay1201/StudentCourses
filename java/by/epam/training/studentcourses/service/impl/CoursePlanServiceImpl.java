@@ -9,7 +9,7 @@ public class CoursePlanServiceImpl extends EntityCRUDAbstractService<CoursePlan>
 	implements CoursePlanService {
 	
 	public CoursePlanServiceImpl() {
-		super(DAOFactory.getInstance().getCourseplanDAO(), ValidatorFactory.getCoursePlanValidator());
+		super(DAOFactory.getInstance().getCoursePlanDAO(), ValidatorFactory.getCoursePlanValidator());
 	}
 	
 }

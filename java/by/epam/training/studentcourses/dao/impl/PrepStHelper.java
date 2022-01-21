@@ -6,11 +6,14 @@ import java.sql.Types;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import by.epam.training.studentcourses.dao.exception.DBErrorMessages;
 import by.epam.training.studentcourses.dao.impl.dbmeta.MySQLTypeConverter;
 import by.epam.training.studentcourses.util.Filter;
 import by.epam.training.studentcourses.util.TableAttr;
 
 public class PrepStHelper {
+	
+	private PrepStHelper() {}
 
 	public static void fill(PreparedStatement ps, boolean skipNull, Object[] obj) throws SQLException {
 		int j = 0;
@@ -32,7 +35,8 @@ public class PrepStHelper {
 			} else if (obj[i].getClass() == LocalDate.class) {
 				ps.setDate(j + 1, MySQLTypeConverter.toMySQLDate((LocalDate)obj[i]));
 			} else {
-					throw new IllegalArgumentException("Unknown type \"" + obj[i].getClass().getName() + "\"");
+					throw new IllegalArgumentException(
+							DBErrorMessages.getUnsupportedTypeEncounderedMessage(obj.getClass().getName()));
 			}
 			j ++;
 		}
@@ -68,15 +72,16 @@ public class PrepStHelper {
 		if (i == nullAttributesStates.length) {
 			return null;
 		}
-		String updSt = "UPDATE `" + tableName + "` SET ";
+		StringBuilder updSt = new StringBuilder("UPDATE `" + tableName + "` SET ");
 		for (i = 0; i < attributes.length; i ++) {
 			if (nullAttributesStates[i] || attributes[i].getAttrName().equals(idAttr.getAttrName())) {
 				continue;
 			}
-			updSt += ("`" + attributes[i].getAttrName() + "` = ?, ");
+			updSt.append("`" + attributes[i].getAttrName() + "` = ?, ");
 		}
-		updSt = updSt.substring(0, updSt.length() - 2) + " WHERE `" + idAttr.getAttrName() + "` = ?";
-		return updSt;
+		updSt.delete(updSt.length() - 2, updSt.length());
+		updSt.append(" WHERE `" + idAttr.getAttrName() + "` = ?");
+		return updSt.toString();
 	}
 	
 	public static String genDeleteByIdStatement(String tableName, TableAttr idAttrName) {
@@ -87,41 +92,27 @@ public class PrepStHelper {
 		if (filter.size() == 0) {
 			return "";
 		}
-		String whereClauseStr = "";
+		StringBuilder whereClauseStr = new StringBuilder();
 		String relationOperator;
 		int i;
 		for (i = 0; i < filter.size(); i ++) {
-			switch(filter.getAttrFiltrationType(i)) {
-			case LIKE:
-				relationOperator = "LIKE";
-				break;
-			case GREATER_THAN:
-				relationOperator = ">";
-				break;
-			case LESS_THAN:
-				relationOperator = "<";
-				break;
-			case EQUALS:
-				relationOperator = "=";
-				break;
-			default:
-				throw new IllegalArgumentException();	
-			}
-			whereClauseStr += String.format("(`%s` %s ?)", filter.getAttrName(i), relationOperator); 
+			relationOperator = filter.getAttrFiltrationType(i).getStringRepr();
+			whereClauseStr.append(String.format("(`%s` %s ?)", filter.getAttrName(i), relationOperator));
 			if (i != filter.size() - 1) {
-				whereClauseStr += " and ";
+				whereClauseStr.append(" and ");
 			}
 		}
-		return whereClauseStr;
+		whereClauseStr.delete(whereClauseStr.length() - 5, whereClauseStr.length());
+		return whereClauseStr.toString();
 	}
 		
 	// (?, ?, ..., ?) generator
 	private static String expGen1(int n) {
-		String expr = "(";
+		StringBuilder expr = new StringBuilder("(");
 		for (int i = 0; i < n - 1; i ++) {
-			expr = expr + "?, ";
+			expr.append(expr + "?, ");
 		}
-		return expr + "?)";
+		return expr.append("?)").toString();
 	}
 
 }

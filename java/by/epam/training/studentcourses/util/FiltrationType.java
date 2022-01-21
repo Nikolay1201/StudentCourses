@@ -14,13 +14,13 @@ public enum FiltrationType {
 		this.value = value;
 	}
 	
-	public String getTextRepr() {
+	public String getStringRepr() {
 		return value;
 	}
 	
 	public static FiltrationType getByTextRepr(String textRepr) {
 		for (int i = 0; i < FiltrationType.values().length; i ++) {
-			if (FiltrationType.values()[i].equals(textRepr)) {
+			if (FiltrationType.values()[i].getStringRepr().equals(textRepr)) {
 				return FiltrationType.values()[i];
 			}
 		}

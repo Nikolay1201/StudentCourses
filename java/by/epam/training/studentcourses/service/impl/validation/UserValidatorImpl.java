@@ -9,12 +9,12 @@ import by.epam.training.studentcourses.util.entity.User;
 
 public class UserValidatorImpl implements EntityValidator<User> {
 	
-	private static final int minAge = 14;
-	private static final LocalDate minBirthDate = LocalDate.parse("1920-01-01");
-	private static final String phoneNumberRegExp = "^(([0-9]){9,16})$";
-	private static final String emailRegExp = "^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$";
-	private static final String loginRegExp = "^(?=.{8,20}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$";
-	private static final String passwordRegExp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$";
+	private static final int MIN_AGE = 14;
+	private static final LocalDate MIN_BIRTH_DATE = LocalDate.parse("1920-01-01");
+	private static final String PHONE_NUMBER_REG_EXP = "^(([0-9]){9,16})$";
+	private static final String EMAIL_REG_EXP = "^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$";
+	private static final String LOGIN_REG_EXP = "^(?=.{8,20}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._]+(?<![_.])$";
+	private static final String PASSWORD_REG_EXP = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$";
 	
 	@Override
 	public Tables.Users.Attr validate(User user) {
@@ -46,31 +46,25 @@ public class UserValidatorImpl implements EntityValidator<User> {
 	}
 	
 	private boolean validateBirthDate(LocalDate birthDate) {
-		if (birthDate == null || 
-				birthDate.compareTo(minBirthDate) < 0 ||
-				birthDate.compareTo(LocalDate.now().minusYears(minAge)) > 0) {
-			return false;
-		}
-		return true;
+		return (birthDate == null || 
+			birthDate.compareTo(MIN_BIRTH_DATE) < 0 ||
+			birthDate.compareTo(LocalDate.now().minusYears(MIN_AGE)) > 0);
 	}
 	
 	private boolean validatePhoneNumber(String phoneNumber) {
-		if (!Pattern.matches(phoneNumberRegExp, phoneNumber)) {
-			return false;
-		}
-		return true;
+		return (!Pattern.matches(PHONE_NUMBER_REG_EXP, phoneNumber));
 	}
 	
 	private boolean validateEmali(String email) {
-		return Pattern.matches(emailRegExp, email);
+		return Pattern.matches(EMAIL_REG_EXP, email);
 	}
 	
 	private boolean validateLogin(String login) {
-		return Pattern.matches(loginRegExp, login);
+		return Pattern.matches(LOGIN_REG_EXP, login);
 	}
 	
 	private boolean validatePassword(String password) {
-		return Pattern.matches(passwordRegExp, password);
+		return Pattern.matches(PASSWORD_REG_EXP, password);
 	}	
 	
 	private boolean validateName(String name) {

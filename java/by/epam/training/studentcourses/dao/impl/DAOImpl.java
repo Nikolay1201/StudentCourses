@@ -10,31 +10,33 @@ import by.epam.training.studentcourses.dao.LessonDAO;
 import by.epam.training.studentcourses.dao.UserDAO;
 import by.epam.training.studentcourses.dao.exception.DAOException;
 import by.epam.training.studentcourses.dao.exception.InternalDAOException;
+import by.epam.training.studentcourses.dao.impl.pool.ConnectionPool;
 import by.epam.training.studentcourses.dao.impl.pool.ConnectionPoolFactory;
 
 public class DAOImpl implements DAO {
-	private static final UserDAO userDAO = EntityDAOFactory.getUserDAO();
-	private static final CourseDAO courseDAO = EntityDAOFactory.getCourseDAO();
-	private static final CoursePlanDAO coursePlanDAO = EntityDAOFactory.getCoursePlanDAO();
-	private static final LessonDAO lessonDAO = EntityDAOFactory.getLessonDAO();
+	private final UserDAO userDAO = EntityDAOFactory.getUserDAO();
+	private final CourseDAO courseDAO = EntityDAOFactory.getCourseDAO();
+	private final CoursePlanDAO coursePlanDAO = EntityDAOFactory.getCoursePlanDAO();
+	private final LessonDAO lessonDAO = EntityDAOFactory.getLessonDAO();
+	private final ConnectionPool connectionPool = ConnectionPoolFactory.getInstance();
 	
 	@Override
 	public void init() throws DAOException {
 		try {
-			ConnectionPoolFactory.getInstance().init();
+			connectionPool.init();
 		} catch (SQLException e) {
 			//LOGGER
-			throw new InternalDAOException();
+			throw new InternalDAOException(e);
 		}
 	}
 	
 	@Override
 	public void close() throws DAOException {
 		try {
-			ConnectionPoolFactory.getInstance().close();
+			connectionPool.close();
 		} catch (SQLException e) {
 			//LOGGER
-			throw new InternalDAOException();
+			throw new InternalDAOException(e);
 		}
 	}
 
@@ -49,7 +51,7 @@ public class DAOImpl implements DAO {
 	}
 
 	@Override
-	public CoursePlanDAO getCourseplanDAO() {
+	public CoursePlanDAO getCoursePlanDAO() {
 		return coursePlanDAO;
 	}
 	
