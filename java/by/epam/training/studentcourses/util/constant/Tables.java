@@ -4,29 +4,6 @@ import by.epam.training.studentcourses.util.TableAttr;
 
 public class Tables {
 	
-//	static {
-//		Tables.tableNames = new String[Tables.values().length];
-//		User.attrNames = new String[User.values().length];
-//		Course.attrNames = new String[Course.values().length];
-//		CoursePlan.attrNames = new String[CoursePlan.values().length];
-//		Lesson.attrNames = new String[Lesson.values().length];
-//		for (int i = 0; i < Tables.values().length; i ++) {
-//			Tables.tableNames[i] = Tables.values()[i].getTableName();
-//		}
-//		for (int i = 0; i < User.values().length; i ++) {
-//			User.attrNames[i] = User.values()[i].getAttrName();
-//		}
-//		for (int i = 0; i < Course.values().length; i ++) {
-//			Course.attrNames[i] = Course.values()[i].getAttrName();
-//		}
-//		for (int i = 0; i < CoursePlan.values().length; i ++) {
-//			CoursePlan.attrNames[i] = CoursePlan.values()[i].getAttrName();
-//		}		
-//		for (int i = 0; i < Lesson.values().length; i ++) {
-//			Lesson.attrNames[i] = Lesson.values()[i].getAttrName();
-//		}
-//	}
-	
 	public static class Users {
 		public static final String TABLE_NAME = "users";
 		
