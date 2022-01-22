@@ -12,7 +12,7 @@ import by.epam.training.studentcourses.util.entity.Course;
 public class CourseDAOImpl extends EntityAbstractDAO<Course> implements CourseDAO {
 	
 	public CourseDAOImpl() {
-		super(Tables.Courses.tableName, Tables.Courses.Attr.values(), Tables.Courses.Attr.COURSE_ID);
+		super(Tables.Courses.TABLE_NAME, Tables.Courses.Attr.values(), Tables.Courses.Attr.COURSE_ID);
 	}
 
 	@Override

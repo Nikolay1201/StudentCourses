@@ -42,8 +42,8 @@ public class ConnectionPoolImpl implements ConnectionPool {
     	if (dbUrl == null || username == null || password == null) {
     		throw new SQLException();
     	}
-		usedConnections = new ArrayList<Connection>();
-		connectionPool = new ArrayBlockingQueue<Connection>(initialPoolSize);
+		usedConnections = new ArrayList<>();
+		connectionPool = new ArrayBlockingQueue<>(initialPoolSize);
 		Connection connection;
 		for (int i = 0; i < initialPoolSize; i++) {
 			connection = createConnection();

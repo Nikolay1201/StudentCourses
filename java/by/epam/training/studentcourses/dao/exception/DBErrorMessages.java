@@ -6,7 +6,7 @@ public class DBErrorMessages {
 		
 	public static String getInvalidTableAttributeMessage(
 		String tableName, String attrName) { 
-		return String.format("Error in code: There is no attribute `%s` in the table `%s`",
+		return String.format("There is no attribute `%s` in the table `%s`",
 				attrName, tableName);
 	}
 	
@@ -16,12 +16,12 @@ public class DBErrorMessages {
 	
 	public static String getFilterDoesntMatchTableMessage(String tableName, Filter filter) {
 		return String.format("The following filter doesn't matches the table `%s`%n%s", 
-				tableName, filter.getStringRepr());
+				tableName, filter.toString());
 	}
 	
-	public static String getEntityDoesntContainIdMessage(Object entity) {
-		return String.format("The entity of %s class doesn't contain value of the ID attribute, "
-				+ "impossible to identify the entity in the table", entity.getClass().getName());
+	public static String genIdIsNotDefinedMessage(String entitysClassName) {
+		return String.format("Operation with entity %s is forbidden: ID is not defined. "
+				+ "Impossible to identify the entity.", entitysClassName);
 	}
 	
 	public static String getUnsupportedTypeEncounderedMessage(String typeName) {

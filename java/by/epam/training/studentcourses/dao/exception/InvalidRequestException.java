@@ -1,18 +1,13 @@
 package by.epam.training.studentcourses.dao.exception;
 
 public class InvalidRequestException extends DAOException {
-	private String invalidRequest;
 	
-	public InvalidRequestException(String invalidRequest) {
-		this.invalidRequest = invalidRequest;
+	public InvalidRequestException(Throwable e) {
+		super(e);
 	}
 	
-	public InvalidRequestException(String invalidRequest, Throwable e, String message) {
+	public InvalidRequestException(String message, Throwable e) {
 		super(message, e);
-		this.invalidRequest = invalidRequest;
 	}
 	
-	public String getRequest() {
-		return invalidRequest;
-	}
 }

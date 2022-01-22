@@ -17,7 +17,7 @@ import by.epam.training.studentcourses.util.entity.CourseStatus;
 public class CoursePlanDAOImpl extends EntityAbstractDAO<CoursePlan> implements CoursePlanDAO {
 	
 	public CoursePlanDAOImpl() {
-		super(Tables.CoursesPlans.tableName, Tables.CoursesPlans.Attr.values(), 
+		super(Tables.CoursesPlans.TABLE_NAME, Tables.CoursesPlans.Attr.values(), 
 				Tables.CoursesPlans.Attr.COURSE_PLAN_ID);
 	}
 

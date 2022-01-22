@@ -13,7 +13,7 @@ import by.epam.training.studentcourses.util.entity.UserRole;
 public class UserDAOImpl extends EntityAbstractDAO<User> implements UserDAO {
 
 	public UserDAOImpl() {
-		super(Tables.Users.tableName, Tables.Users.Attr.values(), Tables.Users.Attr.USER_ID);
+		super(Tables.Users.TABLE_NAME, Tables.Users.Attr.values(), Tables.Users.Attr.USER_ID);
 	}
 
 	@Override

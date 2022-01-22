@@ -5,23 +5,27 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import by.epam.training.studentcourses.dao.EntityDAO;
 import by.epam.training.studentcourses.dao.exception.DAOException;
 import by.epam.training.studentcourses.dao.exception.DBErrorMessages;
-import by.epam.training.studentcourses.dao.exception.InternalDAOException;
+import by.epam.training.studentcourses.dao.exception.InternalException;
 import by.epam.training.studentcourses.dao.exception.InvalidEntityException;
 import by.epam.training.studentcourses.dao.exception.InvalidRequestException;
+import by.epam.training.studentcourses.dao.exception.NoSuchEntityException;
 import by.epam.training.studentcourses.dao.impl.pool.ConnectionPool;
 import by.epam.training.studentcourses.dao.impl.pool.ConnectionPoolFactory;
 import by.epam.training.studentcourses.util.Filter;
+import by.epam.training.studentcourses.util.FiltrationType;
 import by.epam.training.studentcourses.util.Identifiable;
 import by.epam.training.studentcourses.util.TableAttr;
 
 
 public abstract class EntityAbstractDAO<T extends Identifiable> implements EntityDAO<T> {
 	
+    private static final Logger logger = LogManager.getLogger(EntityAbstractDAO.class);
 	private String insertPrepStatement;
 	private String deleteByIdPrepStatement;
 	private TableAttr idAttr;
@@ -55,7 +59,7 @@ public abstract class EntityAbstractDAO<T extends Identifiable> implements Entit
 					}
 					entity.setId(null);
 					fillPrepStatementWithResultSet(entity, ps, false);
-					System.out.println(ps.toString()); //LOGGER : log ps.toString();
+					logger.trace(ps.toString()); //LOGGER : log ps.toString();
 					ps.addBatch();
 				}
 				ps.executeBatch();
@@ -69,7 +73,7 @@ public abstract class EntityAbstractDAO<T extends Identifiable> implements Entit
 				}
 			}
 		} catch(SQLException e) {
-			throw new InternalDAOException(e);
+			throw new InternalException(e);
 		}
 	}
 
@@ -82,7 +86,8 @@ public abstract class EntityAbstractDAO<T extends Identifiable> implements Entit
 			conn = connectionPool.getConnection();
 			if (!validateFilter(filter, tableAttributes)) {
 				throw new InvalidRequestException(
-						DBErrorMessages.getFilterDoesntMatchTableMessage(tableName, filter));
+						DBErrorMessages.getFilterDoesntMatchTableMessage(tableName, filter),
+						new IllegalArgumentException());
 			}
 			PreparedStatement ps = conn.prepareStatement(
 					PrepStHelper.genSelectByFilterStatement(tableName, filter));
@@ -95,7 +100,7 @@ public abstract class EntityAbstractDAO<T extends Identifiable> implements Entit
 			}
 			return entityList;
 		} catch (SQLException e) {
-			throw new InternalDAOException(e);
+			throw new InternalException(e);
 		} finally {
 			if (conn != null) {
 				connectionPool.releaseConnection(conn);
@@ -117,7 +122,7 @@ public abstract class EntityAbstractDAO<T extends Identifiable> implements Entit
 				if (entity.getId() == null) {
 					conn.rollback();
 					throw new InvalidEntityException(entity, 
-							DBErrorMessages.getEntityDoesntContainIdMessage(entity));
+							DBErrorMessages.genIdIsNotDefinedMessage(entity.getClass().getName()));
 				}
 				nullAttributesStates = getNullAttributesStates(entity);
 				int nullAttrCount = 0;
@@ -133,7 +138,7 @@ public abstract class EntityAbstractDAO<T extends Identifiable> implements Entit
 						tableName, tableAttributes, nullAttributesStates, idAttr));
 				fillPrepStatementWithResultSet(entity, ps, true);
 				ps.setInt(ps.getParameterMetaData().getParameterCount(), entity.getId());
-				System.out.println(ps.toString());
+				logger.trace(ps.toString());
 				ps.addBatch();
 				//LOGGER
 			}
@@ -149,7 +154,7 @@ public abstract class EntityAbstractDAO<T extends Identifiable> implements Entit
 			} catch (SQLException e1) {
 				//LOGGER
 			}
-			throw new InternalDAOException(e);
+			throw new InternalException(e);
 		} finally {
 			if (conn != null) {
 				connectionPool.releaseConnection(conn);
@@ -158,9 +163,9 @@ public abstract class EntityAbstractDAO<T extends Identifiable> implements Entit
 
 	}
 
-	@Override @Deprecated(forRemoval = false)
-	public void deleteCascade(List<T> entityList) throws DAOException {
-		if (entityList.isEmpty()) {
+	@Override
+	public void deleteByIdsListCascade(List<Integer> entitiesIdsList) throws DAOException {
+		if (entitiesIdsList.isEmpty()) {
 			return;
 		}
 		Connection conn = null;
@@ -169,14 +174,15 @@ public abstract class EntityAbstractDAO<T extends Identifiable> implements Entit
 			try {
 				conn = connectionPool.getConnection();
 				ps = conn.prepareStatement(deleteByIdPrepStatement);
-				for (T entity : entityList) {
-					if (entity.getId() == null) {
+				for (Integer entitysId : entitiesIdsList) {
+					if (entitysId == null) {
 						conn.rollback();
-						throw new InvalidEntityException(entity, 
-								DBErrorMessages.getEntityDoesntContainIdMessage(entity));
+						throw new InvalidRequestException(
+								DBErrorMessages.genIdIsNotDefinedMessage(tableName),
+								new NullPointerException());
 					}
-					ps.setInt(1, entity.getId());
-					System.out.println(ps.toString());
+					ps.setInt(1, entitysId);
+					logger.trace(ps.toString());
 					ps.addBatch();
 				}
 				ps.executeBatch();
@@ -191,11 +197,36 @@ public abstract class EntityAbstractDAO<T extends Identifiable> implements Entit
 				}
 			}
 		} catch (SQLException e) {
-			throw new InternalDAOException(e);
+			throw new InternalException(e);
 		}
 	}
 	
-	public boolean validateFilter(Filter filter, TableAttr[] allowableAttributes) {
+	@Override
+	public void add(T entity) throws DAOException {
+		add(Arrays.asList(entity));
+	}
+	
+	@Override
+	public T getById(Integer id) throws DAOException {
+		List<T> entityList = getByFilter(new Filter(FiltrationType.EQUALS, 
+				idAttr.getAttrName(), String.valueOf(id)));
+		if (entityList.isEmpty()) {
+			throw new NoSuchEntityException();
+		}
+		return entityList.get(0);
+	}	
+	
+	@Override 
+	public void update(T entity) throws DAOException {
+		update(Arrays.asList(entity));
+	}
+	
+	@Override
+	public void deleteById(Integer id) throws DAOException {
+		deleteByIdsListCascade(Arrays.asList(id));
+	}
+	
+	private boolean validateFilter(Filter filter, TableAttr[] allowableAttributes) {
 		for (int i = 0; i < filter.size(); i ++) {
 			for (int j = 0; j < allowableAttributes.length; j ++) {
 				if (filter.getAttrName(i).equals(allowableAttributes[i].getAttrName())) {

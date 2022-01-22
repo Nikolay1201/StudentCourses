@@ -12,9 +12,12 @@ public class InvalidEntityException extends ServiceException {
 		this.entity = entity;
 	}
 	
+	public InvalidEntityException() {
+		entity = null;
+	}
+	
 	public Object getEntity() {
 		return entity;
 	}
-	
-	public InvalidEntityException() {}
+
 }

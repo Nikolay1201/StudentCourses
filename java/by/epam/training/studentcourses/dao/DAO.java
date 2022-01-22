@@ -10,6 +10,7 @@ public interface DAO {
 	public CourseDAO getCourseDAO();
 	public CoursePlanDAO getCoursePlanDAO();
 	public LessonDAO getLessonDAO();
+	public UserSessionTokenDAO getUserSessionTokenDAO();
 	
 }
 	

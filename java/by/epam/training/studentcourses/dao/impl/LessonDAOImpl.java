@@ -16,7 +16,7 @@ import by.epam.training.studentcourses.util.entity.Lesson;
 public class LessonDAOImpl extends EntityAbstractDAO<Lesson> implements LessonDAO {
 
 	public LessonDAOImpl() {
-		super(Tables.Lessons.tableName, Tables.Lessons.Attr.values(), Tables.Lessons.Attr.LESSON_ID);
+		super(Tables.Lessons.TABLE_NAME, Tables.Lessons.Attr.values(), Tables.Lessons.Attr.LESSON_ID);
 	}
 
 	@Override

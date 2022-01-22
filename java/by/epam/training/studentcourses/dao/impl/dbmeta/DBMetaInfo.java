@@ -9,12 +9,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import by.epam.training.studentcourses.dao.exception.DAOException;
-import by.epam.training.studentcourses.dao.exception.InternalDAOException;
+import by.epam.training.studentcourses.dao.exception.InternalException;
 import by.epam.training.studentcourses.dao.impl.pool.ConnectionPool;
 
 public class DBMetaInfo {
 
-	private final Map<String, TableInfo> tablesInfoMap = new HashMap<String, TableInfo>();
+	private final Map<String, TableInfo> tablesInfoMap = new HashMap<>();
 	
 	public Map<String, TableInfo> getTablesInfo() {
 		return tablesInfoMap;
@@ -33,7 +33,7 @@ public class DBMetaInfo {
 				while (tablesMetainfoRS.next()) {
 					if (tablesMetainfoRS.getString("TABLE_NAME").equals("sys_config")) continue; // CRUTCH!
 					TableInfo tableInfo = new TableInfo(tablesMetainfoRS.getString("TABLE_NAME"));
-					Map<String, AttrInfo> attrMap = new HashMap<String, AttrInfo>();
+					Map<String, AttrInfo> attrMap = new HashMap<>();
 					columnsRS = dbMeta.getColumns(null, null, tableInfo.getName(), null);
 					while (columnsRS.next()) {
 						Class<?> dataType = MySQLTypeConverter.mySQLDataTypeToInternalDataType(columnsRS.getInt("DATA_TYPE"));
@@ -58,7 +58,7 @@ public class DBMetaInfo {
 						String pkAttrName = primaryKeysRS.getString("COLUMN_NAME");
 						attrMap.get(pkAttrName).setPK(true);
 					}
-					tableInfo.addAttrInfo(new ArrayList<AttrInfo>(attrMap.values()));
+					tableInfo.addAttrInfo(new ArrayList<>(attrMap.values()));
 					tablesInfoMap.put(tableInfo.getName(), tableInfo);
 					
 				}
@@ -77,7 +77,7 @@ public class DBMetaInfo {
 				}
 			}
 		 } catch (SQLException e) {
-			throw new InternalDAOException(e);
+			throw new InternalException(e);
 		 }
 	}
 

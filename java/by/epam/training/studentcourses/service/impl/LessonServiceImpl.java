@@ -7,7 +7,7 @@ import by.epam.training.studentcourses.util.entity.Lesson;
 public class LessonServiceImpl extends EntityCRUDAbstractService<Lesson> {
 	
 	public LessonServiceImpl() {
-		super(DAOFactory.getInstance().getLessonDAO(), ValidatorFactory.getLessonValidator());
+		init(DAOFactory.getInstance().getLessonDAO(), ValidatorFactory.getLessonValidator());
 	}
 	
 }

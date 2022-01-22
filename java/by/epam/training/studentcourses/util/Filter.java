@@ -31,13 +31,23 @@ public class Filter {
 		}
 	}
 	
-	private ArrayList<FiltrationCondition> filterList = new ArrayList<FiltrationCondition>();
+	private ArrayList<FiltrationCondition> filterList = new ArrayList<>();
 	
-	public void addCondition(FiltrationType type, String attrName, String attrValue) {
-		if (attrName == null || type == null) {
+	public void addCondition(FiltrationType filtrationType, String attrName, String attrValue) {
+		if (attrName == null || filtrationType == null) {
 			throw new IllegalArgumentException();
 		}
-		filterList.add(new FiltrationCondition(attrName, attrValue, type));
+		filterList.add(new FiltrationCondition(attrName, attrValue, filtrationType));
+	}
+	
+	public Filter() {}
+	
+	public Filter(String attrName, String attrValue) {
+		addCondition(FiltrationType.EQUALS, attrName, attrValue);
+	}
+	
+	public Filter(FiltrationType filtrationType, String attrName, String attrValue) {
+		addCondition(filtrationType, attrName, attrValue);
 	}
 	
 	public int size() {
@@ -56,16 +66,17 @@ public class Filter {
 		return filterList.get(index).getType();
 	}
 	
-	public String getStringRepr() {
+	@Override
+	public String toString() {
+		StringBuilder str = new StringBuilder(Filter.class.getName() + " [");
 		if (filterList.isEmpty()) {
-			return "[empty]";
+			return str.append("empty]").toString();
 		}
-		StringBuilder str = new StringBuilder();
 		for (int i = 0; i < filterList.size(); i ++) {
-			str.append(String.format("%s %s %s%n", filterList.get(i).getAttrName(), 
+			str.append(String.format("%n`%s` %s `%s`", filterList.get(i).getAttrName(), 
 					filterList.get(i).getType().getStringRepr(), filterList.get(i).getAttrValue()));
 		}
-		return str.toString();
+		return str.append("%n]").toString();
 	}
 	
 	

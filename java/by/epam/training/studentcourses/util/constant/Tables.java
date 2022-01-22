@@ -28,11 +28,11 @@ public class Tables {
 //	}
 	
 	public static class Users {
-		public static final String tableName = "users";
+		public static final String TABLE_NAME = "users";
 		
 		private Users() {}
 		
-		public static enum Attr implements TableAttr {
+		public enum Attr implements TableAttr {
 			USER_ID("user_id"),
 			ROLE_ID("role_id"),
 			NAME("name"),
@@ -61,11 +61,11 @@ public class Tables {
 	}
 	
 	public static class Courses {
-		public static final String tableName = "courses";
+		public static final String TABLE_NAME = "courses";
 		
 		private Courses() {}
 		
-		public static enum Attr implements TableAttr {
+		public enum Attr implements TableAttr {
 			COURSE_ID("course_id"),
 			NAME("name"),
 			DURATION("duration"),
@@ -86,11 +86,11 @@ public class Tables {
 	}
 	
 	public static class CoursesPlans {
-		public static final String tableName = "courses_plans";
+		public static final String TABLE_NAME = "courses_plans";
 		
 		private CoursesPlans() {}
 		
-		public static enum Attr implements TableAttr {
+		public enum Attr implements TableAttr {
 			COURSE_PLAN_ID("course_plan_id"),
 			COURSE_ID("course_id"),
 			TRAINER_USER_ID("trainer_user_id"),
@@ -111,11 +111,11 @@ public class Tables {
 	}
 	
 	public static class Lessons {
-		public static final String tableName = "lessons";
+		public static final String TABLE_NAME = "lessons";
 		
 		private Lessons() {}
 		
-		public static enum Attr implements TableAttr {
+		public enum Attr implements TableAttr {
 			LESSON_ID("lesson_id"),
 			COURSE_PLAN_ID("courses_plan"),
 			START_TIME("start_time"),
@@ -123,6 +123,28 @@ public class Tables {
 			CLASSROOM_NUMBER("classroom_number"),
 			IS_COMPLETED("is_completed"),
 			REMARKS("remarks");
+			
+			private String attrName;
+	
+			private Attr(String attrName) {
+				this.attrName = attrName;
+			}
+	
+			public String getAttrName() {
+				return attrName;
+			}
+		}
+	}
+	
+	public static class UserSessionToken {
+		public static final String TABLE_NAME = "session_tokens";
+		
+		private UserSessionToken() {}
+		
+		public enum Attr implements TableAttr {
+			SESSION_TOKEN_ID("session_token_id"),
+			USER_ID("user_id"),
+			SESSION_TOKEN("session_token");
 			
 			private String attrName;
 	

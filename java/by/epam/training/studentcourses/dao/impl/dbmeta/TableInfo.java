@@ -6,7 +6,7 @@ import java.util.NoSuchElementException;
 
 public class TableInfo {
 	private String name;
-	private List<AttrInfo> attrInfoList = new ArrayList<AttrInfo>();
+	private List<AttrInfo> attrInfoList = new ArrayList<>();
 	
 	public TableInfo(String name) {
 		this.name = name;

@@ -10,7 +10,6 @@ import by.epam.training.studentcourses.dao.CourseDAO;
 import by.epam.training.studentcourses.dao.DAOFactory;
 import by.epam.training.studentcourses.dao.UserDAO;
 import by.epam.training.studentcourses.dao.exception.DAOException;
-import by.epam.training.studentcourses.service.exception.ServiceException;
 import by.epam.training.studentcourses.util.Filter;
 import by.epam.training.studentcourses.util.FiltrationType;
 import by.epam.training.studentcourses.util.constant.Tables;
@@ -53,17 +52,17 @@ public class ServerTest {
 	
 	public static void updateCouseTest() throws DAOException {
 		Course course = new Course(
-					1,
-					null,
-					null,
-					null,
-					null
-				);
+			1,
+			null,
+			null,
+			null,
+			null
+		);
 		cd.update(Arrays.asList(course));
 	}
 	
 	public static void deleteCouseTest() throws DAOException {
-		cd.deleteCascade(Arrays.asList(new Course(
+		cd.deleteByIdsListCascade(Arrays.asList(new Course(
 				12333333,
 				null,
 				"2 years",
@@ -138,7 +137,7 @@ public class ServerTest {
 				);
 		List<User> usersIdList = new ArrayList<User>();
 		usersIdList.add(user);
-		ud.deleteCascade(usersIdList);
+		ud.deleteByIdsListCascade(usersIdList);
 	}
 
 }

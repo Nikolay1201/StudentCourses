@@ -10,4 +10,6 @@ public class URLResponseParams {
 		public static final String SHOW_ALERT = "alert";
 	}
 	
+	private URLResponseParams() {}
+	
 }

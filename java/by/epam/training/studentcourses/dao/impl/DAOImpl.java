@@ -8,16 +8,18 @@ import by.epam.training.studentcourses.dao.DAO;
 import by.epam.training.studentcourses.dao.EntityDAOFactory;
 import by.epam.training.studentcourses.dao.LessonDAO;
 import by.epam.training.studentcourses.dao.UserDAO;
+import by.epam.training.studentcourses.dao.UserSessionTokenDAO;
 import by.epam.training.studentcourses.dao.exception.DAOException;
-import by.epam.training.studentcourses.dao.exception.InternalDAOException;
+import by.epam.training.studentcourses.dao.exception.InternalException;
 import by.epam.training.studentcourses.dao.impl.pool.ConnectionPool;
 import by.epam.training.studentcourses.dao.impl.pool.ConnectionPoolFactory;
 
 public class DAOImpl implements DAO {
-	private final UserDAO userDAO = EntityDAOFactory.getUserDAO();
-	private final CourseDAO courseDAO = EntityDAOFactory.getCourseDAO();
-	private final CoursePlanDAO coursePlanDAO = EntityDAOFactory.getCoursePlanDAO();
-	private final LessonDAO lessonDAO = EntityDAOFactory.getLessonDAO();
+	private static UserDAO userDAOInstance = EntityDAOFactory.getUserDAO();
+	private static CourseDAO courseDAOInstance = EntityDAOFactory.getCourseDAO();
+	private static CoursePlanDAO coursePlanDAOInstance = EntityDAOFactory.getCoursePlanDAO();	
+	private static LessonDAO lessonDAOInstance = EntityDAOFactory.getLessonDAO();
+	private static UserSessionTokenDAO userSessionTokenDAOInstance = EntityDAOFactory.getUserSessionTokenDAO();
 	private final ConnectionPool connectionPool = ConnectionPoolFactory.getInstance();
 	
 	@Override
@@ -26,7 +28,7 @@ public class DAOImpl implements DAO {
 			connectionPool.init();
 		} catch (SQLException e) {
 			//LOGGER
-			throw new InternalDAOException(e);
+			throw new InternalException(e);
 		}
 	}
 	
@@ -36,28 +38,33 @@ public class DAOImpl implements DAO {
 			connectionPool.close();
 		} catch (SQLException e) {
 			//LOGGER
-			throw new InternalDAOException(e);
+			throw new InternalException(e);
 		}
 	}
 
 	@Override
 	public UserDAO getUserDAO() {
-		return userDAO;
+		return userDAOInstance;
 	}
 
 	@Override
 	public CourseDAO getCourseDAO() {
-		return courseDAO;
+		return courseDAOInstance;
 	}
 
 	@Override
 	public CoursePlanDAO getCoursePlanDAO() {
-		return coursePlanDAO;
+		return coursePlanDAOInstance;
 	}
 	
 	@Override
 	public LessonDAO getLessonDAO() {
-		return lessonDAO;
+		return lessonDAOInstance;
+	}
+
+	@Override
+	public UserSessionTokenDAO getUserSessionTokenDAO() {
+		return userSessionTokenDAOInstance;
 	}
 	
 //	public boolean validateEnteretedTableMetaData() {

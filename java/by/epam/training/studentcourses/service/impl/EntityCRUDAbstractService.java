@@ -1,5 +1,6 @@
 package by.epam.training.studentcourses.service.impl;
 
+import java.util.Arrays;
 import java.util.List;
 
 import by.epam.training.studentcourses.dao.EntityDAO;
@@ -16,11 +17,6 @@ public abstract class EntityCRUDAbstractService<T extends Identifiable> implemen
 	
 	private EntityDAO<T> dao;
 	private EntityValidator<T> validator;
-	
-	protected EntityCRUDAbstractService(EntityDAO<T> entityDAO, EntityValidator<T> validator) {
-		this.dao = entityDAO;
-		this.validator = validator;
-	}
 
 	@Override
 	public void add(List<T> entityList) throws ServiceException {
@@ -57,12 +53,53 @@ public abstract class EntityCRUDAbstractService<T extends Identifiable> implemen
 	}
 
 	@Override
-	public void deleteCascade(List<T> entityList) throws ServiceException {
+	public void deleteByIdsList(List<Integer> entityList) throws ServiceException {
 		try {
-			dao.deleteCascade(entityList);
+			dao.deleteByIdsListCascade(entityList);
 		} catch (DAOException e) {
 			throw new ServiceException(e);
 		}
+	}
+	
+	@Override
+	public void add(T entity) throws ServiceException {
+		try {
+			dao.add(entity);
+		} catch (DAOException e) {
+			throw new ServiceException(e);
+		}
+	}
+	
+	@Override 
+	public T getById(Integer id) throws ServiceException {
+		try {
+			return dao.getById(id);
+		} catch (DAOException e) {
+			throw new ServiceException(e);
+		}
+	}
+	
+	@Override
+	public void update(T entity) throws ServiceException {
+		try {
+			dao.update(Arrays.asList(entity));
+		} catch (DAOException e) {
+			throw new ServiceException(e);
+		}
+	}
+	
+	@Override 
+	public void deleteById(Integer id) throws ServiceException {
+		try {
+			dao.deleteById(id);
+		} catch (DAOException e) {
+			throw new ServiceException(e);
+		}
+	}
+
+	protected void init(EntityDAO<T> entityDAO, EntityValidator<T> validator) {
+		this.dao = entityDAO;
+		this.validator = validator;
 	}
 	
 }
