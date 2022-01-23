@@ -24,6 +24,7 @@ public class ServerTest {
 
 	//EXAMPLE
 	public static void main(String[] args) throws DAOException {
+		BasicConfigurator.configure();
 		DAOFactory.getInstance().init();
 		updateCouseTest();
 		DAOFactory.getInstance().close();

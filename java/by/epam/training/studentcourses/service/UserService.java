@@ -8,7 +8,7 @@ import by.epam.training.studentcourses.util.entity.UserSessionToken;
 public interface UserService extends EntityCRUDService<User> {
 	
 	public UseSessionInfo authorize(String login, String password) throws ServiceException;
-	public User confirmAuthorizationBySessionToken(String authKey) throws ServiceException;
+	public UseSessionInfo confirmAuthenticationBySessionToken(String sessionToken) throws ServiceException;
 	void logout(UserSessionToken userSessionToken) throws ServiceException;
 	
 }

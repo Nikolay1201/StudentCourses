@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import by.epam.training.studentcourses.dao.EntityDAO;
 import by.epam.training.studentcourses.dao.exception.DAOException;
 import by.epam.training.studentcourses.dao.exception.DBErrorMessages;
@@ -18,7 +21,6 @@ import by.epam.training.studentcourses.dao.exception.NoSuchEntityException;
 import by.epam.training.studentcourses.dao.impl.pool.ConnectionPool;
 import by.epam.training.studentcourses.dao.impl.pool.ConnectionPoolFactory;
 import by.epam.training.studentcourses.util.Filter;
-import by.epam.training.studentcourses.util.FiltrationType;
 import by.epam.training.studentcourses.util.Identifiable;
 import by.epam.training.studentcourses.util.TableAttr;
 
@@ -59,7 +61,7 @@ public abstract class EntityAbstractDAO<T extends Identifiable> implements Entit
 					}
 					entity.setId(null);
 					fillPrepStatementWithResultSet(entity, ps, false);
-					logger.trace(ps.toString()); //LOGGER : log ps.toString();
+					logger.trace(ps);
 					ps.addBatch();
 				}
 				ps.executeBatch();
@@ -92,6 +94,7 @@ public abstract class EntityAbstractDAO<T extends Identifiable> implements Entit
 			PreparedStatement ps = conn.prepareStatement(
 					PrepStHelper.genSelectByFilterStatement(tableName, filter));
 			PrepStHelper.fill(ps, true, filter);
+			logger.trace(ps);
 			ResultSet rs = ps.executeQuery();
 			connectionPool.releaseConnection(conn);
 			while (rs.next()) {
@@ -138,9 +141,8 @@ public abstract class EntityAbstractDAO<T extends Identifiable> implements Entit
 						tableName, tableAttributes, nullAttributesStates, idAttr));
 				fillPrepStatementWithResultSet(entity, ps, true);
 				ps.setInt(ps.getParameterMetaData().getParameterCount(), entity.getId());
-				logger.trace(ps.toString());
+				logger.trace(ps);
 				ps.addBatch();
-				//LOGGER
 			}
 			if (ps != null) {
 				ps.executeBatch();
@@ -182,12 +184,11 @@ public abstract class EntityAbstractDAO<T extends Identifiable> implements Entit
 								new NullPointerException());
 					}
 					ps.setInt(1, entitysId);
-					logger.trace(ps.toString());
+					logger.trace(ps);
 					ps.addBatch();
 				}
 				ps.executeBatch();
 				conn.commit(); //IT WORKS WITHOUT COMMIT!??? how
-				//LOGGER
 			} finally {
 				if (ps != null) {
 					ps.close();
@@ -208,8 +209,8 @@ public abstract class EntityAbstractDAO<T extends Identifiable> implements Entit
 	
 	@Override
 	public T getById(Integer id) throws DAOException {
-		List<T> entityList = getByFilter(new Filter(FiltrationType.EQUALS, 
-				idAttr.getAttrName(), String.valueOf(id)));
+		List<T> entityList = getByFilter(
+				new Filter(idAttr.getAttrName(), String.valueOf(id)));
 		if (entityList.isEmpty()) {
 			throw new NoSuchEntityException();
 		}

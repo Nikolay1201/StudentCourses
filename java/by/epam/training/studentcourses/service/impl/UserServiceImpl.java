@@ -45,11 +45,17 @@ public class UserServiceImpl extends EntityCRUDAbstractService<User> implements 
 	}
 	
 	@Override 
-	public void add(List<User> entityList) throws ServiceException {
-		for (User user : entityList) {
+	public void add(List<User> usersList) throws ServiceException {
+		for (User user : usersList) {
 			user.setPassword(hashing.hashString(user.getPassword()));
 		}
-		super.add(entityList);
+		super.add(usersList);
+	}
+	
+	@Override 
+	public void add(User user) throws ServiceException {
+		user.setPassword(hashing.hashString(user.getPassword()));
+		super.add(user);
 	}
 	
 	@Override
@@ -75,7 +81,7 @@ public class UserServiceImpl extends EntityCRUDAbstractService<User> implements 
 	}
 	
 	@Override
-	public User confirmAuthorizationBySessionToken(String sessionToken) throws ServiceException {
+	public UseSessionInfo confirmAuthenticationBySessionToken(String sessionToken) throws ServiceException {
 		try {
 			List<UserSessionToken> userSessionTokensList = userSessionTokenDAO.getByFilter(
 					new Filter(Tables.UserSessionToken.Attr.SESSION_TOKEN.getAttrName(), sessionToken));
@@ -83,7 +89,7 @@ public class UserServiceImpl extends EntityCRUDAbstractService<User> implements 
 				throw new NoSuchEntityException();
 			}
 			UserSessionToken userSessionToken = userSessionTokensList.get(0);
-			return userDAO.getById(userSessionToken.getId());
+			return new UseSessionInfo(userDAO.getById(userSessionToken.getId()), userSessionToken);
 		} catch (by.epam.training.studentcourses.dao.exception.NoSuchEntityException e) {
 			throw new NoSuchEntityException(e);
 		} catch (DAOException e) {
@@ -105,7 +111,5 @@ public class UserServiceImpl extends EntityCRUDAbstractService<User> implements 
 	private String genSessionToken(String baseStr) {
 		return hashing.hashString(LocalDateTime.now().toString() + baseStr);
 	}
-
-
 	
 }
