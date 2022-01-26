@@ -34,7 +34,7 @@ public class UserDAOImpl extends EntityAbstractDAO<User> implements UserDAO {
 		throws SQLException {
 		PrepStHelper.fill(ps, skipNull, new Object[] {
 			user.getId(),
-			user.getRole().id(),
+			user.getRole().getId(),
 			user.getName(),
 			user.getSurename(),
 			user.getPatronymic(),
@@ -59,9 +59,9 @@ public class UserDAOImpl extends EntityAbstractDAO<User> implements UserDAO {
 			MySQLTypeConverter.toInternalString(rs.getString(Tables.Users.Attr.PATRONYMIC.getAttrName())), 
 			MySQLTypeConverter.toInternalDate(rs.getDate(Tables.Users.Attr.BIRTH_DATE.getAttrName())),
 			MySQLTypeConverter.toInternalString(rs.getString(Tables.Users.Attr.PHONE_NUMBER.getAttrName())), 
+			MySQLTypeConverter.toInternalString(rs.getString(Tables.Users.Attr.EMAIL.getAttrName())),
 			MySQLTypeConverter.toInternalString(rs.getString(Tables.Users.Attr.LOGIN.getAttrName())), 
 			MySQLTypeConverter.toInternalString(rs.getString(Tables.Users.Attr.PASSWORD.getAttrName())), 
-			MySQLTypeConverter.toInternalString(rs.getString(Tables.Users.Attr.EMAIL.getAttrName())), 
 			MySQLTypeConverter.toInternalString(rs.getString(Tables.Users.Attr.DESCRIPTION.getAttrName())), 
 			MySQLTypeConverter.toInternalDateTime(rs.getTimestamp(Tables.Users.Attr.REG_DATETIME.getAttrName()))
 			);

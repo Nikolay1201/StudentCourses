@@ -1,8 +1,16 @@
 package by.epam.training.studentcourses.controller;
 
+import java.io.IOException;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import by.epam.training.studentcourses.controller.exception.ControllerException;
+import by.epam.training.studentcourses.service.Service;
+import by.epam.training.studentcourses.service.ServiceFactory;
+
 public interface Command {
-	void execute(HttpServletRequest request, HttpServletResponse response);
+	public static Service service = ServiceFactory.getInstance();
+	void execute(HttpServletRequest request, HttpServletResponse response) 
+			throws ControllerException, IOException;
 }

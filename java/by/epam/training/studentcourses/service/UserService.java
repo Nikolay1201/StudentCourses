@@ -1,7 +1,7 @@
 package by.epam.training.studentcourses.service;
 
 import by.epam.training.studentcourses.service.exception.ServiceException;
-import by.epam.training.studentcourses.service.impl.UseSessionInfo;
+import by.epam.training.studentcourses.util.UseSessionInfo;
 import by.epam.training.studentcourses.util.entity.User;
 import by.epam.training.studentcourses.util.entity.UserSessionToken;
 

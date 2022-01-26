@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import by.epam.training.studentcourses.dao.exception.DAOException;
-import by.epam.training.studentcourses.dao.exception.InternalException;
+import by.epam.training.studentcourses.dao.exception.InternalDAOException;
 import by.epam.training.studentcourses.dao.impl.pool.ConnectionPool;
 
 public class DBMetaInfo {
@@ -77,7 +77,7 @@ public class DBMetaInfo {
 				}
 			}
 		 } catch (SQLException e) {
-			throw new InternalException(e);
+			throw new InternalDAOException(e);
 		 }
 	}
 

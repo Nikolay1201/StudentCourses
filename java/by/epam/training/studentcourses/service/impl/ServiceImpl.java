@@ -13,6 +13,7 @@ import by.epam.training.studentcourses.service.exception.ServiceException;
 public class ServiceImpl implements Service {
 	
 	private DAO dao = DAOFactory.getInstance();
+	private UserService userService = new UserServiceImpl();
 
 	
 	@Override
@@ -35,7 +36,7 @@ public class ServiceImpl implements Service {
 
 	@Override
 	public UserService getUserService() {
-		return null;
+		return userService;
 	}
 
 	@Override

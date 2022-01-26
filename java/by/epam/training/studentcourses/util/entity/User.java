@@ -98,8 +98,8 @@ public class User implements Identifiable {
 		return email;
 	}
 	
-	public void setEmali(String emali) {
-		this.email = emali;
+	public void setEmail(String email) {
+		this.email = email;
 	}
 	
 	public String getLogin() {

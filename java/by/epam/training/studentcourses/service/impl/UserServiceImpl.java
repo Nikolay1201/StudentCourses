@@ -1,6 +1,7 @@
 package by.epam.training.studentcourses.service.impl;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 
 import by.epam.training.studentcourses.dao.DAOFactory;
@@ -10,11 +11,14 @@ import by.epam.training.studentcourses.dao.exception.DAOException;
 import by.epam.training.studentcourses.service.UserService;
 import by.epam.training.studentcourses.service.ValidatorFactory;
 import by.epam.training.studentcourses.service.exception.NoSuchEntityException;
+import by.epam.training.studentcourses.service.exception.NotAllowedException;
 import by.epam.training.studentcourses.service.exception.ServiceException;
 import by.epam.training.studentcourses.service.exception.WrongPasswordException;
 import by.epam.training.studentcourses.util.Filter;
+import by.epam.training.studentcourses.util.UseSessionInfo;
 import by.epam.training.studentcourses.util.constant.Tables;
 import by.epam.training.studentcourses.util.entity.User;
+import by.epam.training.studentcourses.util.entity.UserRole;
 import by.epam.training.studentcourses.util.entity.UserSessionToken;
 
 public class UserServiceImpl extends EntityCRUDAbstractService<User> implements UserService {
@@ -24,45 +28,76 @@ public class UserServiceImpl extends EntityCRUDAbstractService<User> implements 
 	private UserDAO userDAO = DAOFactory.getInstance().getUserDAO();
 	private Hashing hashing = HashingFactory.getInstance();
 	
-	public UserServiceImpl() {
-		init(userDAO, ValidatorFactory.getUserValidator());
+	{
+		init(userDAO, ValidatorFactory.getUserValidator(), new CRUDAuthorizator<User> (UserRole.ADMIN) {
+			
+			@Override 
+			public void add(User user, List<User> usersList) throws NotAllowedException {
+				if (user.getRole() == UserRole.ADMIN) {
+					for (User u : usersList) {
+						if (u.getRole() != UserRole.STUDENT && user.getRole() != UserRole.TRAINER) {
+							throw new NotAllowedException(UserRole.SYSTEM);
+						}
+					}
+				}
+			}
+			
+			@Override 
+			public void update(User user, User userToUpdate) throws NotAllowedException {
+				if (!user.getId().equals(userToUpdate.getId())) {
+					super.update(user, userToUpdate);
+				} else {
+					throw new NotAllowedException(anythingAllowedRolesList);
+				}
+			}
+			
+			@Override 
+			public void deleteById(User user, Integer id) throws NotAllowedException {
+				if (!user.getId().equals(id)) {
+					super.deleteById(user, id);
+				} else {
+					throw new NotAllowedException(anythingAllowedRolesList);
+				}
+			}
+			
+			@Override 
+			public void getById(User user, Integer id) throws NotAllowedException {
+				if (!user.getId().equals(id)) {
+					super.getById(user, id);
+				} else {
+					throw new NotAllowedException(anythingAllowedRolesList);
+				}
+			}
+		});
 	}
 	
-	@Override 
-	public List<User> getByFilter(Filter filter) throws ServiceException {
-		List<User> usersList = super.getByFilter(filter);
-		for (User user : usersList) {
-			user.setPassword(null);
+	@Override
+	public void add(User user, List<User> usersList) throws ServiceException {
+		for (int i = 0; i < usersList.size(); i ++) {
+			usersList.get(i).setPassword(hashing.hashString(user.getPassword()));
+		}
+		add(user, usersList);
+	}
+	
+	@Override
+	public void add(User user, User userToAdd) throws ServiceException {
+		add(user, Arrays.asList(userToAdd));
+	}
+	
+	@Override
+	public List<User> getByFilter(User user, Filter filter) throws ServiceException {
+		List<User> usersList = getByFilter(user, filter);
+		for (User selectedUser : usersList) {
+			selectedUser.setPassword(null);
 		}
 		return usersList;
-	}
-	
-	@Override 
-	public User getById(Integer id) throws ServiceException {
-		User user = super.getById(id);
-		user.setPassword(null);
-		return user;
-	}
-	
-	@Override 
-	public void add(List<User> usersList) throws ServiceException {
-		for (User user : usersList) {
-			user.setPassword(hashing.hashString(user.getPassword()));
-		}
-		super.add(usersList);
-	}
-	
-	@Override 
-	public void add(User user) throws ServiceException {
-		user.setPassword(hashing.hashString(user.getPassword()));
-		super.add(user);
 	}
 	
 	@Override
 	public UseSessionInfo authorize(String login, String password) throws ServiceException {
 		List<User> usersList = null;
 		try {
-			usersList = userDAO.getByFilter(new Filter(Tables.Users.Attr.LOGIN.getAttrName(), login));
+			usersList = userDAO.getByFilter(new Filter(Tables.Users.Attr.LOGIN, login));
 			if (usersList.isEmpty()) {
 				throw new NoSuchEntityException();
 			}
@@ -74,7 +109,7 @@ public class UserServiceImpl extends EntityCRUDAbstractService<User> implements 
 			UserSessionToken userSessionToken = 
 					new UserSessionToken(user.getId(), genSessionToken(user.getLogin()));
 			userSessionTokenDAO.add(userSessionToken);
-			return new UseSessionInfo(user, new UserSessionToken(user.getId(), genSessionToken(user.getLogin())));
+			return new UseSessionInfo(user, userSessionToken);
 		} catch (DAOException e) {
 			throw new ServiceException(e);
 		}
@@ -100,7 +135,7 @@ public class UserServiceImpl extends EntityCRUDAbstractService<User> implements 
 	@Override
 	public void logout(UserSessionToken userSessionToken) throws ServiceException {
 		try {
-			userSessionTokenDAO.deleteById(userSessionToken.getId());
+			userSessionTokenDAO.deleteByIdCascade(userSessionToken.getId());
 		} catch (by.epam.training.studentcourses.dao.exception.NoSuchEntityException e) {
 			throw new NoSuchEntityException(e);
 		} catch (DAOException e) {

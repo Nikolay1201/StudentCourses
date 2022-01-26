@@ -50,6 +50,10 @@ public class Filter {
 		addCondition(filtrationType, attrName, attrValue);
 	}
 	
+	public Filter(TableAttr attr, String value) {
+		this(attr.getAttrName(), value);
+	}
+	
 	public int size() {
 		return filterList.size();
 	}

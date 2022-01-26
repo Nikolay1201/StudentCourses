@@ -1,6 +1,7 @@
 package by.epam.training.studentcourses.service.impl;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.NoSuchElementException;
@@ -8,10 +9,12 @@ import java.util.NoSuchElementException;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
+import by.epam.training.studentcourses.util.constant.MySQLDBParams;
+
 public class PBKDF2Hashing implements Hashing {
 	
-	private static final int LENGTH = 32;
-	private static final int CALCULATION_COMPLEXITY = 65535;
+	private static final int LENGTH = 32*4*4;
+	private static final int CALCULATION_COMPLEXITY = 128;
 	private String salt;
 	private Charset strCharset;
 	private SecretKeyFactory skf;
@@ -36,6 +39,11 @@ public class PBKDF2Hashing implements Hashing {
 		} catch (InvalidKeySpecException e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	public static void main(String[] args) {
+		Hashing h = new PBKDF2Hashing(MySQLDBParams.SALT, StandardCharsets.UTF_16);
+		System.out.println(h.hashString("q"));
 	}
 
 }

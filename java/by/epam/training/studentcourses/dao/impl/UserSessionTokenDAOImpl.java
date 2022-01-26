@@ -20,8 +20,8 @@ public class UserSessionTokenDAOImpl extends EntityAbstractDAO<UserSessionToken>
 
 	@Override
 	public boolean validateEntityForInsert(UserSessionToken userSessionToken) {
-		return userSessionToken.getId() == null ||
-			   userSessionToken.getSessionToken() == null;
+		return userSessionToken.getUserId() != null &&
+			   userSessionToken.getSessionToken() != null;
 	}
 
 	@Override
@@ -29,6 +29,7 @@ public class UserSessionTokenDAOImpl extends EntityAbstractDAO<UserSessionToken>
 			PreparedStatement ps, boolean skipNull) throws SQLException {
 		PrepStHelper.fill(ps, skipNull, new Object[] {
 				userSessionToken.getId(),
+				userSessionToken.getUserId(),
 				userSessionToken.getSessionToken()
 				}		
 			);	
@@ -48,6 +49,7 @@ public class UserSessionTokenDAOImpl extends EntityAbstractDAO<UserSessionToken>
 	public boolean[] getNullAttributesStates(UserSessionToken userSessionToken) {
 		return new boolean[] {
 				userSessionToken.getId() == null,
+				userSessionToken.getUserId() == null,
 				userSessionToken.getSessionToken() == null
 		};			   
 	}

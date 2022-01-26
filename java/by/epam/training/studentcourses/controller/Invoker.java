@@ -1,23 +1,33 @@
 package by.epam.training.studentcourses.controller;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import by.epam.training.studentcourses.controller.constant.ErrorMessages;
+import by.epam.training.studentcourses.controller.constant.RequestParams;
+import by.epam.training.studentcourses.controller.exception.ControllerException;
+import by.epam.training.studentcourses.controller.exception.InvalidRequestException;
+import by.epam.training.studentcourses.controller.impl.AuthenticationCommand;
+
 public class Invoker {
-    private final Map<String, Command> commandMap = new HashMap<>();
+    private static final Map<String, Command> commandMap = new HashMap<>();
     
-    public void register(String commandName, Command command) {
-        commandMap.put(commandName, command);
+    static {
+    	commandMap.put(RequestParams.OperationTypes.AUTHENTICATION, new AuthenticationCommand());
     }
     
-    public void execute(String commandName, HttpServletRequest request, HttpServletResponse response) {
+    public static void execute(String commandName, HttpServletRequest request, HttpServletResponse response)
+    		throws ControllerException, IOException {
         Command command = commandMap.get(commandName);
         if (command == null) {
-            throw new IllegalStateException("No command registered for " + commandName);
+            throw new InvalidRequestException(ErrorMessages.INTERNAL_ERROR);
         }
         command.execute(request, response);
     }
+    
+    private Invoker () {}
 }

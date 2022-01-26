@@ -97,12 +97,9 @@ public class PrepStHelper {
 		int i;
 		for (i = 0; i < filter.size(); i ++) {
 			relationOperator = filter.getAttrFiltrationType(i).getStringRepr();
-			whereClauseStr.append(String.format("(`%s` %s ?)", filter.getAttrName(i), relationOperator));
-			if (i != filter.size() - 1) {
-				whereClauseStr.append(" and ");
-			}
+			whereClauseStr.append(String.format("(`%s` %s ?) and", filter.getAttrName(i), relationOperator));
 		}
-		whereClauseStr.delete(whereClauseStr.length() - 5, whereClauseStr.length());
+		whereClauseStr.delete(whereClauseStr.length() - 3, whereClauseStr.length());
 		return whereClauseStr.toString();
 	}
 		
@@ -110,7 +107,7 @@ public class PrepStHelper {
 	private static String expGen1(int n) {
 		StringBuilder expr = new StringBuilder("(");
 		for (int i = 0; i < n - 1; i ++) {
-			expr.append(expr + "?, ");
+			expr.append("?, ");
 		}
 		return expr.append("?)").toString();
 	}

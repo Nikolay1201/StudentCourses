@@ -10,7 +10,7 @@ import by.epam.training.studentcourses.dao.LessonDAO;
 import by.epam.training.studentcourses.dao.UserDAO;
 import by.epam.training.studentcourses.dao.UserSessionTokenDAO;
 import by.epam.training.studentcourses.dao.exception.DAOException;
-import by.epam.training.studentcourses.dao.exception.InternalException;
+import by.epam.training.studentcourses.dao.exception.InternalDAOException;
 import by.epam.training.studentcourses.dao.impl.pool.ConnectionPool;
 import by.epam.training.studentcourses.dao.impl.pool.ConnectionPoolFactory;
 
@@ -28,7 +28,7 @@ public class DAOImpl implements DAO {
 			connectionPool.init();
 		} catch (SQLException e) {
 			//LOGGER
-			throw new InternalException(e);
+			throw new InternalDAOException(e);
 		}
 	}
 	
@@ -38,7 +38,7 @@ public class DAOImpl implements DAO {
 			connectionPool.close();
 		} catch (SQLException e) {
 			//LOGGER
-			throw new InternalException(e);
+			throw new InternalDAOException(e);
 		}
 	}
 

@@ -3,9 +3,10 @@ package by.epam.training.studentcourses.util.entity;
 import java.util.NoSuchElementException;
 
 public enum UserRole {
-	ADMIN(0),
-	TRAINER(1),
-	STUDENT(2);
+	SYSTEM(0),
+	ADMIN(1),
+	TRAINER(2),
+	STUDENT(3);
 	
 	private int id;
 	
@@ -13,7 +14,7 @@ public enum UserRole {
 		this.id = id;
 	}
 	
-	public int id() {
+	public int getId() {
 		return id;
 	}
 	
@@ -25,6 +26,5 @@ public enum UserRole {
 		} 
 		throw new NoSuchElementException();
 	}
-
 
 }

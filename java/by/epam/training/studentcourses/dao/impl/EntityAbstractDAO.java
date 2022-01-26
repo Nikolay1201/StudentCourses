@@ -14,7 +14,7 @@ import org.apache.logging.log4j.Logger;
 import by.epam.training.studentcourses.dao.EntityDAO;
 import by.epam.training.studentcourses.dao.exception.DAOException;
 import by.epam.training.studentcourses.dao.exception.DBErrorMessages;
-import by.epam.training.studentcourses.dao.exception.InternalException;
+import by.epam.training.studentcourses.dao.exception.InternalDAOException;
 import by.epam.training.studentcourses.dao.exception.InvalidEntityException;
 import by.epam.training.studentcourses.dao.exception.InvalidRequestException;
 import by.epam.training.studentcourses.dao.exception.NoSuchEntityException;
@@ -45,69 +45,86 @@ public abstract class EntityAbstractDAO<T extends Identifiable> implements Entit
 	}
 
 	@Override
-	public void add(List<T> entityList) throws DAOException {
+	public List<Integer> add(List<T> entityList) throws DAOException {
 		if (entityList.isEmpty()) {
-			return;
+			return new ArrayList<>();
 		}
 		Connection conn = null;
 		PreparedStatement ps = null;
+		ResultSet insertedIdsRs = null;
 		try {
 			try {
 				conn = connectionPool.getConnection();
-				ps = conn.prepareStatement(insertPrepStatement);
+				ps = conn.prepareStatement(insertPrepStatement, PreparedStatement.RETURN_GENERATED_KEYS);
 				for (T entity : entityList) {
 					if (!validateEntityForInsert(entity)) {
 						throw new InvalidEntityException(entity);
 					}
 					entity.setId(null);
 					fillPrepStatementWithResultSet(entity, ps, false);
-					logger.trace(ps);
+					//logger.trace(ps);
+					System.out.println(ps.toString());
 					ps.addBatch();
 				}
 				ps.executeBatch();
 				conn.commit();
-			} finally {
-				if (conn != null) {
-					connectionPool.releaseConnection(conn);
+				List<Integer> insertedIdsList = new ArrayList<>();
+				insertedIdsRs = ps.getGeneratedKeys();
+				while (insertedIdsRs.next()) {
+					insertedIdsList.add(insertedIdsRs.getInt(1));
 				}
+				return insertedIdsList;
+			} finally {
 				if (ps != null) {
 					ps.close();
 				}
+				if (conn != null) {
+					connectionPool.releaseConnection(conn);
+				}
 			}
 		} catch(SQLException e) {
-			throw new InternalException(e);
+			throw new InternalDAOException(e);
 		}
 	}
 
 	@Override
 	public List<T> getByFilter(Filter filter) throws DAOException {
 		Connection conn = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
 		List<T> entityList = new ArrayList<T>();
 		T entity;
 		try {
-			conn = connectionPool.getConnection();
-			if (!validateFilter(filter, tableAttributes)) {
-				throw new InvalidRequestException(
-						DBErrorMessages.getFilterDoesntMatchTableMessage(tableName, filter),
-						new IllegalArgumentException());
+			try {
+				conn = connectionPool.getConnection();
+				if (!validateFilter(filter, tableAttributes)) {
+					throw new InvalidRequestException(
+							DBErrorMessages.getFilterDoesntMatchTableMessage(tableName, filter),
+							new IllegalArgumentException());
+				}
+				ps = conn.prepareStatement(
+						PrepStHelper.genSelectByFilterStatement(tableName, filter));
+				PrepStHelper.fill(ps, true, filter);
+				logger.trace(ps);
+				rs = ps.executeQuery();
+				while (rs.next()) {
+					entity = createEntityByResultSet(rs);
+					entityList.add(entity);
+				}
+				return entityList;
+			} finally {
+				if (rs != null) {
+					rs.close();
+				}
+				if (ps != null) {
+					ps.close();
+				}
+				if (conn != null) {
+					connectionPool.releaseConnection(conn);
+				}
 			}
-			PreparedStatement ps = conn.prepareStatement(
-					PrepStHelper.genSelectByFilterStatement(tableName, filter));
-			PrepStHelper.fill(ps, true, filter);
-			logger.trace(ps);
-			ResultSet rs = ps.executeQuery();
-			connectionPool.releaseConnection(conn);
-			while (rs.next()) {
-				entity = createEntityByResultSet(rs);
-				entityList.add(entity);
-			}
-			return entityList;
 		} catch (SQLException e) {
-			throw new InternalException(e);
-		} finally {
-			if (conn != null) {
-				connectionPool.releaseConnection(conn);
-			}
+			throw new InternalDAOException(e);
 		}
 	}
 
@@ -117,50 +134,48 @@ public abstract class EntityAbstractDAO<T extends Identifiable> implements Entit
 			return;
 		}
 		Connection conn = null;
+		PreparedStatement ps = null;
 		try {
-			conn = connectionPool.getConnection();
-			PreparedStatement ps = null;
-			boolean[] nullAttributesStates;
-			for (T entity : entityList) {
-				if (entity.getId() == null) {
-					conn.rollback();
-					throw new InvalidEntityException(entity, 
-							DBErrorMessages.genIdIsNotDefinedMessage(entity.getClass().getName()));
-				}
-				nullAttributesStates = getNullAttributesStates(entity);
-				int nullAttrCount = 0;
-				for (int i = 0; i < nullAttributesStates.length; i ++) {
-					if (nullAttributesStates[i] && !tableAttributes[i].getAttrName().equals(idAttr.getAttrName())) {
-						nullAttrCount ++;
+			try {
+				conn = connectionPool.getConnection();
+				boolean[] nullAttributesStates;
+				for (T entity : entityList) {
+					if (entity.getId() == null) {
+						conn.rollback();
+						throw new InvalidEntityException(entity, 
+								DBErrorMessages.genIdIsNotDefinedMessage(entity.getClass().getName()));
 					}
+					nullAttributesStates = getNullAttributesStates(entity);
+					int nullAttrCount = 0;
+					for (int i = 0; i < nullAttributesStates.length; i ++) {
+						if (nullAttributesStates[i] && !tableAttributes[i].getAttrName().equals(idAttr.getAttrName())) {
+							nullAttrCount ++;
+						}
+					}
+					if (nullAttrCount == tableAttributes.length - 1) {
+						continue;
+					}
+					ps = conn.prepareStatement(PrepStHelper.genUpdateByIdStatement(
+							tableName, tableAttributes, nullAttributesStates, idAttr));
+					fillPrepStatementWithResultSet(entity, ps, true);
+					ps.setInt(ps.getParameterMetaData().getParameterCount(), entity.getId());
+					logger.trace(ps);
+					ps.addBatch();
 				}
-				if (nullAttrCount == tableAttributes.length - 1) {
-					continue;
+				if (ps != null) {
+					ps.executeBatch();
+					conn.commit();
 				}
-				ps = conn.prepareStatement(PrepStHelper.genUpdateByIdStatement(
-						tableName, tableAttributes, nullAttributesStates, idAttr));
-				fillPrepStatementWithResultSet(entity, ps, true);
-				ps.setInt(ps.getParameterMetaData().getParameterCount(), entity.getId());
-				logger.trace(ps);
-				ps.addBatch();
-			}
-			if (ps != null) {
-				ps.executeBatch();
-				conn.commit();
+			} finally {
+				if (ps != null) {
+					ps.close();
+				}
+				if (conn != null) {
+					connectionPool.releaseConnection(conn);
+				}
 			}
 		} catch (SQLException e) {
-			try { 
-				if (conn != null) {
-					conn.rollback();
-				}
-			} catch (SQLException e1) {
-				//LOGGER
-			}
-			throw new InternalException(e);
-		} finally {
-			if (conn != null) {
-				connectionPool.releaseConnection(conn);
-			}
+			throw new DAOException(e);
 		}
 
 	}
@@ -198,13 +213,17 @@ public abstract class EntityAbstractDAO<T extends Identifiable> implements Entit
 				}
 			}
 		} catch (SQLException e) {
-			throw new InternalException(e);
+			throw new InternalDAOException(e);
 		}
 	}
 	
 	@Override
-	public void add(T entity) throws DAOException {
-		add(Arrays.asList(entity));
+	public Integer add(T entity) throws DAOException {
+		List<Integer> entitiesList = add(Arrays.asList(entity));
+		if (entitiesList.isEmpty()) {
+			throw new NoSuchEntityException();
+		}
+		return entitiesList.get(0);
 	}
 	
 	@Override
@@ -223,7 +242,7 @@ public abstract class EntityAbstractDAO<T extends Identifiable> implements Entit
 	}
 	
 	@Override
-	public void deleteById(Integer id) throws DAOException {
+	public void deleteByIdCascade(Integer id) throws DAOException {
 		deleteByIdsListCascade(Arrays.asList(id));
 	}
 	

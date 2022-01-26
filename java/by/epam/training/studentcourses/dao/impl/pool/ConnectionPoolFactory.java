@@ -4,10 +4,9 @@ import by.epam.training.studentcourses.util.constant.MySQLDBParams;
 
 public class ConnectionPoolFactory {
 	
-	private static final ConnectionPool instance;
+	private static final ConnectionPool instance = new ConnectionPoolImpl();
 	
 	static {
-		instance = new ConnectionPoolImpl();
 		instance.setParams(
 			MySQLDBParams.DB_URL, 
 			MySQLDBParams.ADMIN_LOGIN, 
