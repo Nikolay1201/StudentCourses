@@ -7,6 +7,7 @@ import by.epam.training.studentcourses.service.CoursePlanService;
 import by.epam.training.studentcourses.service.CourseService;
 import by.epam.training.studentcourses.service.LessonService;
 import by.epam.training.studentcourses.service.Service;
+import by.epam.training.studentcourses.service.StudentsHaveCoursesPlansService;
 import by.epam.training.studentcourses.service.UserService;
 import by.epam.training.studentcourses.service.exception.ServiceException;
 
@@ -14,8 +15,11 @@ public class ServiceImpl implements Service {
 	
 	private DAO dao = DAOFactory.getInstance();
 	private UserService userService = new UserServiceImpl();
+	private CourseService courseService = new CourseServiceImpl();
+	private CoursePlanService coursePlanService = new CoursePlanServiceImpl();
+	private StudentsHaveCoursesPlansService studentsHaveCoursesPlansService = 
+			new StudentsHaveCoursesPlansServiceImpl();
 
-	
 	@Override
 	public void init() throws ServiceException {
 		try {
@@ -41,19 +45,21 @@ public class ServiceImpl implements Service {
 
 	@Override
 	public CourseService getCourseService() {
-		// TODO Auto-generated method stub
-		return null;
+		return courseService;
 	}
 
 	@Override
-	public CoursePlanService getCourseplanService() {
-		// TODO Auto-generated method stub
-		return null;
+	public CoursePlanService getCoursePlanService() {
+		return coursePlanService;
+	}
+
+	@Override
+	public StudentsHaveCoursesPlansService getStudentsHaveCoursesPlansService() {
+		return studentsHaveCoursesPlansService;
 	}
 
 	@Override
 	public LessonService getLessonService() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 }

@@ -33,7 +33,7 @@ public class UserValidatorImpl implements EntityValidator<User> {
 		if (!validatePhoneNumber(user.getPhoneNumber())) {
 			return Tables.Users.Attr.PHONE_NUMBER;
 		}
-		if (!validateEmali(user.getEmali())) {
+		if (!validateEmali(user.getEmail())) {
 			return Tables.Users.Attr.EMAIL;
 		}
 		if (!validateLogin(user.getLogin())) {

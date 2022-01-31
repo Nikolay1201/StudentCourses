@@ -1,11 +1,13 @@
 package by.epam.training.studentcourses.util.entity;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import by.epam.training.studentcourses.util.Identifiable;
 
-public class User implements Identifiable {
+public class User implements Identifiable, Serializable {
+	private static final long serialVersionUID = -3351049416576412918L;
 	private Integer id;
 	private LocalDateTime registrationDateTime; // forbid to edit later!
 	private UserRole role; 
@@ -17,7 +19,7 @@ public class User implements Identifiable {
 	private String email;
 	private String login;
 	private String password;
-	private String desciption;
+	private String description;
 	
 	public User() {}
 	
@@ -33,7 +35,7 @@ public class User implements Identifiable {
 		this.email = emali;
 		this.login = login;
 		this.password = password;
-		this.desciption = desciption;
+		this.description = desciption;
 		this.registrationDateTime = registrationDateTime;
 	}
 	
@@ -42,7 +44,7 @@ public class User implements Identifiable {
 		return "User [id=" + id + ", registrationDateTime=" + registrationDateTime + ", role=" + role + ", name=" + name
 				+ ", surename=" + surename + ", patronymic=" + patronymic + ", birthDate=" + birthDate
 				+ ", phoneNumber=" + phoneNumber + ", email=" + email + ", login=" + login + ", password=" + password
-				+ ", desciption=" + desciption + "]";
+				+ ", desciption=" + description + "]";
 	}
 	
 	@Override
@@ -94,7 +96,7 @@ public class User implements Identifiable {
 		this.phoneNumber = phoneNumber;
 	}
 	
-	public String getEmali() {
+	public String getEmail() {
 		return email;
 	}
 	
@@ -118,12 +120,12 @@ public class User implements Identifiable {
 		this.password = password;
 	}
 	
-	public String getDesciption() {
-		return desciption;
+	public String getDescription() {
+		return description;
 	}
 	
-	public void setDesciption(String desciption) {
-		this.desciption = desciption;
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	public LocalDateTime getRegistrationDateTime() {

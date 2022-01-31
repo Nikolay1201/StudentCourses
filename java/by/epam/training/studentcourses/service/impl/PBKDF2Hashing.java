@@ -9,6 +9,12 @@ import java.util.NoSuchElementException;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.spi.LoggerContext;
+
 import by.epam.training.studentcourses.util.constant.MySQLDBParams;
 
 public class PBKDF2Hashing implements Hashing {
@@ -41,7 +47,7 @@ public class PBKDF2Hashing implements Hashing {
 		}
 	}
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		Hashing h = new PBKDF2Hashing(MySQLDBParams.SALT, StandardCharsets.UTF_16);
 		System.out.println(h.hashString("q"));
 	}

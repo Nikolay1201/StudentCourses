@@ -9,12 +9,12 @@ public class Filter {
 	
 	private class FiltrationCondition {
 		private String attrName;
-		private String attrPattern;
+		private String attrValue;
 		private FiltrationType type;
 		
 		public FiltrationCondition(String attrName, String attrValue, FiltrationType type) {
 			this.attrName = attrName;
-			this.attrPattern = attrValue;
+			this.attrValue = attrValue;
 			this.type = type;
 		}
 
@@ -23,7 +23,7 @@ public class Filter {
 		}
 
 		public String getAttrValue() {
-			return attrPattern;
+			return attrValue;
 		}
 
 		public FiltrationType getType() {
@@ -77,10 +77,10 @@ public class Filter {
 			return str.append("empty]").toString();
 		}
 		for (int i = 0; i < filterList.size(); i ++) {
-			str.append(String.format("%n`%s` %s `%s`", filterList.get(i).getAttrName(), 
+			str.append(String.format("\n`%s` %s `%s`", filterList.get(i).getAttrName(), 
 					filterList.get(i).getType().getStringRepr(), filterList.get(i).getAttrValue()));
 		}
-		return str.append("%n]").toString();
+		return str.append("\n]").toString();
 	}
 	
 	

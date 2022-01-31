@@ -8,7 +8,8 @@ public interface Service {
 	public void close() throws ServiceException;
 	public UserService getUserService();
 	public CourseService getCourseService();
-	public CoursePlanService getCourseplanService();
+	public CoursePlanService getCoursePlanService();
 	public LessonService getLessonService();
+	public StudentsHaveCoursesPlansService getStudentsHaveCoursesPlansService();
 
 }

@@ -19,6 +19,8 @@ public class Course implements Identifiable {
 		this.creationTime = creationTime;
 	}
 	
+	public Course() { }
+
 	public String getName() {
 		return name;
 	}

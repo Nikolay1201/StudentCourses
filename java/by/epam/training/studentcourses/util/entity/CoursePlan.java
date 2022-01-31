@@ -6,16 +6,18 @@ public class CoursePlan implements Identifiable {
 	private Integer id;
 	private Course course;
 	private User trainer;
-	private CourseStatus status;
+	private CoursePlanStatus status;
 	private String description;
 	
-	public CoursePlan(Integer id, Course course, User trainer, CourseStatus status, String description) {
+	public CoursePlan(Integer id, Course course, User trainer, CoursePlanStatus status, String description) {
 		this.id = id;
 		this.course = course;
 		this.trainer = trainer;
 		this.status = status;
 		this.description = description;
 	}
+
+	public CoursePlan() { }
 
 	public Course getCourse() {
 		return course;
@@ -33,11 +35,11 @@ public class CoursePlan implements Identifiable {
 		this.trainer = trainer;
 	}
 
-	public CourseStatus getStatus() {
+	public CoursePlanStatus getStatus() {
 		return status;
 	}
 
-	public void setStatus(CourseStatus status) {
+	public void setStatus(CoursePlanStatus status) {
 		this.status = status;
 	}
 

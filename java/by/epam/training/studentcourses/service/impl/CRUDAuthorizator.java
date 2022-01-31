@@ -13,54 +13,54 @@ public class CRUDAuthorizator<T> {
 	
 	protected List<UserRole> anythingAllowedRolesList = new ArrayList<UserRole>();
 	
-	public CRUDAuthorizator(UserRole... userRoles) {
+	protected CRUDAuthorizator(UserRole... userRoles) {
 		anythingAllowedRolesList.addAll(Arrays.asList(userRoles));
 		anythingAllowedRolesList.add(UserRole.SYSTEM);
 	}
 	
-	public void add(User user, List<T> entitiesList) throws NotAllowedException {
-		if (!anythingAllowedRolesList.contains(user.getRole())) {
+	protected void add(User user, List<T> entitiesList) throws NotAllowedException {
+		if (user == null || !anythingAllowedRolesList.contains(user.getRole())) {
 			throw new NotAllowedException(anythingAllowedRolesList);
 		}
 	}
 	
-	public void getByFilter(User user, Filter filter) throws NotAllowedException {
-		if (!anythingAllowedRolesList.contains(user.getRole())) {
+	protected void getByFilter(User user, Filter filter) throws NotAllowedException {
+		if (user == null || !anythingAllowedRolesList.contains(user.getRole())) {
 			throw new NotAllowedException(anythingAllowedRolesList);
 		}
 	}
 	
-	public void getById(User user, Integer id) throws NotAllowedException {
-		if (!anythingAllowedRolesList.contains(user.getRole())) {
+	protected void getById(User user, Integer id) throws NotAllowedException {
+		if (user == null || !anythingAllowedRolesList.contains(user.getRole())) {
 			throw new NotAllowedException(anythingAllowedRolesList);
 		}
 	}
 	
-	public void update(User user, List<T> entitiesList) throws NotAllowedException {
-		if (!anythingAllowedRolesList.contains(user.getRole())) {
+	protected void update(User user, List<T> entitiesList) throws NotAllowedException {
+		if (user == null || !anythingAllowedRolesList.contains(user.getRole())) {
 			throw new NotAllowedException(anythingAllowedRolesList);
 		}
 	}
 
-	public void deleteByIdsList(User user, List<Integer> entitiesIdsList) throws NotAllowedException {
-		if (!anythingAllowedRolesList.contains(user.getRole())) {
+	protected void deleteByIdsList(User user, List<Integer> entitiesIdsList) throws NotAllowedException {
+		if (user == null || !anythingAllowedRolesList.contains(user.getRole())) {
 			throw new NotAllowedException(anythingAllowedRolesList);
 		}
 	}
 	
-	public void add(User user, T entity) throws NotAllowedException { 
-		if (!anythingAllowedRolesList.contains(user.getRole())) {
+	protected void add(User user, T entity) throws NotAllowedException { 
+		if (user == null || !anythingAllowedRolesList.contains(user.getRole())) {
 			throw new NotAllowedException(anythingAllowedRolesList);
 		}
 	}
 	
-	public void update(User user, T entity) throws NotAllowedException {
-		if (!anythingAllowedRolesList.contains(user.getRole())) {
+	protected void update(User user, T entity) throws NotAllowedException {
+		if (user == null || !anythingAllowedRolesList.contains(user.getRole())) {
 			throw new NotAllowedException(anythingAllowedRolesList);
 		}
 	}
 	
-	public void deleteById(User user, Integer id) throws NotAllowedException {
+	protected void deleteById(User user, Integer id) throws NotAllowedException {
 		deleteByIdsList(user, Arrays.asList(id));
 	}
 	

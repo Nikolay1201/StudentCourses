@@ -1,7 +1,7 @@
 package by.epam.training.studentcourses.service.exception;
 
 public class InvalidRequestException extends ServiceException {
-	private final String invalidRequest;
+	private String invalidRequest;
 	
 	public InvalidRequestException(String invalidRequest) {
 		this.invalidRequest = invalidRequest;
@@ -16,6 +16,10 @@ public class InvalidRequestException extends ServiceException {
 		super(message, e);
 		this.invalidRequest = invalidRequest;
 	}
+	
+	public InvalidRequestException(Exception e) {
+		super(e);
+	}	
 	
 	public String getRequest() {
 		return invalidRequest;

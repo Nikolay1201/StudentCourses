@@ -93,9 +93,9 @@ public class Tables {
 		public enum Attr implements TableAttr {
 			COURSE_PLAN_ID("course_plan_id"),
 			COURSE_ID("course_id"),
-			TRAINER_USER_ID("trainer_user_id"),
+			TRAINER_USER_ID("trainer_id"),
 			STATUS_ID("status_id"),
-			DESCRIPTION("descripition");
+			DESCRIPTION("description");
 			
 			private String attrName;
 	
@@ -145,6 +145,30 @@ public class Tables {
 			SESSION_TOKEN_ID("session_token_id"),
 			USER_ID("user_id"),
 			SESSION_TOKEN("session_token");
+			
+			private String attrName;
+	
+			private Attr(String attrName) {
+				this.attrName = attrName;
+			}
+	
+			public String getAttrName() {
+				return attrName;
+			}
+		}
+	}
+	
+	public static class StudentsHaveCoursesPlans {
+		public static final String TABLE_NAME = "students_have_courses_plans";
+		
+		private StudentsHaveCoursesPlans() {}
+		
+		public enum Attr implements TableAttr {
+			ID("id"), 
+			COURSE_PLAN_ID("course_plan_id"),
+			STUDENT_USER_ID("student_user_id"),
+			MARK("mark"),
+			REVIEW("review");
 			
 			private String attrName;
 	
