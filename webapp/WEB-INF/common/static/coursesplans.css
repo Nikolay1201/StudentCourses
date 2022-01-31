@@ -1,0 +1,18 @@
+#filter_block {
+	margin-bottom: 10px;
+}
+
+#form_block {
+	margin-bottom: 30px;
+}
+
+#courses_plans_table {
+	table-layout: fixed;
+	border-collapse: collapse;
+	border: 2px solid black;	
+}
+
+#courses_plans_table td {
+	border: 1px solid black;
+}
+

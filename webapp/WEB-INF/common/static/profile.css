@@ -1,0 +1,9 @@
+#user_table {
+	table-layout: fixed;
+	border-collapse: collapse;
+	border: 2px solid black;	
+}
+
+#user_table td {
+	border: 1px solid black;
+}
