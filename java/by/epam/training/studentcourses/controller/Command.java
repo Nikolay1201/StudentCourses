@@ -10,7 +10,8 @@ import by.epam.training.studentcourses.service.Service;
 import by.epam.training.studentcourses.service.ServiceFactory;
 
 public interface Command {
+	
 	public static Service service = ServiceFactory.getInstance();
-	void execute(HttpServletRequest request, HttpServletResponse response) 
+	String execute(HttpServletRequest request, HttpServletResponse response) 
 			throws ControllerException, IOException;
 }

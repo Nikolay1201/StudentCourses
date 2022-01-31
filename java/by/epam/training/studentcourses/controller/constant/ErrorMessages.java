@@ -7,6 +7,8 @@ public class ErrorMessages {
 				"Пользователя с данным логином не существует";
 		public static final String INVALID_PASSWORD = 
 				"Неверный пароль";
+		public static final String NOT_ALLOWED = 
+				"Недостаточно прав";
 	}
 	
 	public class EntityCRUD {
@@ -15,8 +17,10 @@ public class ErrorMessages {
 	}
 	
 	public static final String INTERNAL_ERROR = 
-			"Неизвестная ошибка\nОбратитесь в техподдержку";
+			"Внутренняя ошибка\nОбратитесь в техподдержку";
 	public static final String NO_SUCH_OPERATION = 
 			"Недопустимая операция";
+	public static final String INVALID_REQUEST = 
+			"Недопустимый запрос";
 	
 }

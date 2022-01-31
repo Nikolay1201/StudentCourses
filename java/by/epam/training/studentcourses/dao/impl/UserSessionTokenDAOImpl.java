@@ -8,9 +8,9 @@ import by.epam.training.studentcourses.dao.UserSessionTokenDAO;
 import by.epam.training.studentcourses.dao.exception.DAOException;
 import by.epam.training.studentcourses.dao.impl.dbmeta.MySQLTypeConverter;
 import by.epam.training.studentcourses.util.constant.Tables;
-import by.epam.training.studentcourses.util.entity.UserSessionToken;
+import by.epam.training.studentcourses.util.entity.SessionToken;
 
-public class UserSessionTokenDAOImpl extends EntityAbstractDAO<UserSessionToken>
+public class UserSessionTokenDAOImpl extends EntityAbstractDAO<SessionToken>
 	implements UserSessionTokenDAO {
 
 	public UserSessionTokenDAOImpl() {
@@ -19,25 +19,25 @@ public class UserSessionTokenDAOImpl extends EntityAbstractDAO<UserSessionToken>
 	}
 
 	@Override
-	public boolean validateEntityForInsert(UserSessionToken userSessionToken) {
+	public boolean validateEntityForInsert(SessionToken userSessionToken) {
 		return userSessionToken.getUserId() != null &&
-			   userSessionToken.getSessionToken() != null;
+			   userSessionToken.getValue() != null;
 	}
 
 	@Override
-	public void fillPrepStatementWithResultSet(UserSessionToken userSessionToken, 
+	public void fillPrepStatementWithResultSet(SessionToken userSessionToken, 
 			PreparedStatement ps, boolean skipNull) throws SQLException {
 		PrepStHelper.fill(ps, skipNull, new Object[] {
 				userSessionToken.getId(),
 				userSessionToken.getUserId(),
-				userSessionToken.getSessionToken()
+				userSessionToken.getValue()
 				}		
 			);	
 	}
 
 	@Override
-	public UserSessionToken createEntityByResultSet(ResultSet rs) throws SQLException, DAOException {
-		return new UserSessionToken(
+	public SessionToken createEntityByResultSet(ResultSet rs) throws SQLException, DAOException {
+		return new SessionToken(
 				MySQLTypeConverter.toInternalInt(
 						rs.getInt(Tables.UserSessionToken.Attr.USER_ID.getAttrName())), 
 				MySQLTypeConverter.toInternalString(
@@ -46,11 +46,11 @@ public class UserSessionTokenDAOImpl extends EntityAbstractDAO<UserSessionToken>
 	}
 
 	@Override
-	public boolean[] getNullAttributesStates(UserSessionToken userSessionToken) {
+	public boolean[] getNullAttributesStates(SessionToken userSessionToken) {
 		return new boolean[] {
 				userSessionToken.getId() == null,
 				userSessionToken.getUserId() == null,
-				userSessionToken.getSessionToken() == null
+				userSessionToken.getValue() == null
 		};			   
 	}
 	

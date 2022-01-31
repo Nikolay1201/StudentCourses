@@ -26,7 +26,7 @@ public class UserDAOImpl extends EntityAbstractDAO<User> implements UserDAO {
 		user.getPhoneNumber() != null &&
 		user.getLogin() != null &&
 		user.getPassword() != null &&
-		user.getEmali() != null;
+		user.getEmail() != null;
 	}
 
 	@Override
@@ -42,8 +42,8 @@ public class UserDAOImpl extends EntityAbstractDAO<User> implements UserDAO {
 			user.getPhoneNumber(),
 			user.getLogin(),
 			user.getPassword(),
-			user.getEmali(),
-			user.getDesciption(),
+			user.getEmail(),
+			user.getDescription(),
 			user.getRegistrationDateTime(), //to do something
 			}		
 		);		
@@ -62,7 +62,8 @@ public class UserDAOImpl extends EntityAbstractDAO<User> implements UserDAO {
 			MySQLTypeConverter.toInternalString(rs.getString(Tables.Users.Attr.EMAIL.getAttrName())),
 			MySQLTypeConverter.toInternalString(rs.getString(Tables.Users.Attr.LOGIN.getAttrName())), 
 			MySQLTypeConverter.toInternalString(rs.getString(Tables.Users.Attr.PASSWORD.getAttrName())), 
-			MySQLTypeConverter.toInternalString(rs.getString(Tables.Users.Attr.DESCRIPTION.getAttrName())), 
+			MySQLTypeConverter.toInternalString(rs.
+					getString(Tables.Users.Attr.DESCRIPTION.getAttrName())), 
 			MySQLTypeConverter.toInternalDateTime(rs.getTimestamp(Tables.Users.Attr.REG_DATETIME.getAttrName()))
 			);
 	}
@@ -79,10 +80,9 @@ public class UserDAOImpl extends EntityAbstractDAO<User> implements UserDAO {
 				user.getPhoneNumber() == null,
 				user.getLogin() == null,
 				user.getPassword() == null,
-				user.getEmali() == null,
-				user.getDesciption() == null,
-				user.getRegistrationDateTime() == null,
-		};
+				user.getEmail() == null,
+				user.getDescription() == null,
+				user.getRegistrationDateTime() == null, };
 	}
 
 }

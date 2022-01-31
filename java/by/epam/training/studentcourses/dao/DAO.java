@@ -11,6 +11,7 @@ public interface DAO {
 	public CoursePlanDAO getCoursePlanDAO();
 	public LessonDAO getLessonDAO();
 	public UserSessionTokenDAO getUserSessionTokenDAO();
+	public StudentsHaveCoursesPlansDAO getStudentsHaveCoursesPlansDAO();
 	
 }
 	

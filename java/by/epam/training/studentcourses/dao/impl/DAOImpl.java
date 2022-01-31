@@ -7,6 +7,7 @@ import by.epam.training.studentcourses.dao.CoursePlanDAO;
 import by.epam.training.studentcourses.dao.DAO;
 import by.epam.training.studentcourses.dao.EntityDAOFactory;
 import by.epam.training.studentcourses.dao.LessonDAO;
+import by.epam.training.studentcourses.dao.StudentsHaveCoursesPlansDAO;
 import by.epam.training.studentcourses.dao.UserDAO;
 import by.epam.training.studentcourses.dao.UserSessionTokenDAO;
 import by.epam.training.studentcourses.dao.exception.DAOException;
@@ -17,27 +18,29 @@ import by.epam.training.studentcourses.dao.impl.pool.ConnectionPoolFactory;
 public class DAOImpl implements DAO {
 	private static UserDAO userDAOInstance = EntityDAOFactory.getUserDAO();
 	private static CourseDAO courseDAOInstance = EntityDAOFactory.getCourseDAO();
-	private static CoursePlanDAO coursePlanDAOInstance = EntityDAOFactory.getCoursePlanDAO();	
+	private static CoursePlanDAO coursePlanDAOInstance = EntityDAOFactory.getCoursePlanDAO();
 	private static LessonDAO lessonDAOInstance = EntityDAOFactory.getLessonDAO();
 	private static UserSessionTokenDAO userSessionTokenDAOInstance = EntityDAOFactory.getUserSessionTokenDAO();
+	private static StudentsHaveCoursesPlansDAO studentsHaveCoursesPlansDAOInstance = EntityDAOFactory
+			.getStudentsHaveCoursesPlansDAO();
 	private final ConnectionPool connectionPool = ConnectionPoolFactory.getInstance();
-	
+
 	@Override
 	public void init() throws DAOException {
 		try {
 			connectionPool.init();
 		} catch (SQLException e) {
-			//LOGGER
+			// LOGGER
 			throw new InternalDAOException(e);
 		}
 	}
-	
+
 	@Override
 	public void close() throws DAOException {
 		try {
 			connectionPool.close();
 		} catch (SQLException e) {
-			//LOGGER
+			// LOGGER
 			throw new InternalDAOException(e);
 		}
 	}
@@ -56,7 +59,7 @@ public class DAOImpl implements DAO {
 	public CoursePlanDAO getCoursePlanDAO() {
 		return coursePlanDAOInstance;
 	}
-	
+
 	@Override
 	public LessonDAO getLessonDAO() {
 		return lessonDAOInstance;
@@ -66,7 +69,12 @@ public class DAOImpl implements DAO {
 	public UserSessionTokenDAO getUserSessionTokenDAO() {
 		return userSessionTokenDAOInstance;
 	}
-	
+
+	@Override
+	public StudentsHaveCoursesPlansDAO getStudentsHaveCoursesPlansDAO() {
+		return studentsHaveCoursesPlansDAOInstance;
+	}
+
 //	public boolean validateEnteretedTableMetaData() {
 //		//check if there is the only primary key attr in the tables
 //		//validation! 
@@ -85,5 +93,5 @@ public class DAOImpl implements DAO {
 //			}
 //		}
 //	}
-	
+
 }
