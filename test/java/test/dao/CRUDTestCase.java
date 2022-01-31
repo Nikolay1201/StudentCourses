@@ -1,11 +1,17 @@
-package test.dao;
+package dao;
+
 import static org.junit.Assert.assertEquals;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -23,6 +29,8 @@ import by.epam.training.studentcourses.util.entity.Course;
 public class CRUDTestCase {
 	
 	private static ConnectionPool pool = ConnectionPoolFactory.getInstance();
+	private Course testCourse;
+	private String uniqueString;
 	private DAO dao = DAOFactory.getInstance();
 	private UserDAO userDAO = dao.getUserDAO();
 	private CourseDAO courseDAO = dao.getCourseDAO();
@@ -30,6 +38,7 @@ public class CRUDTestCase {
 	@BeforeClass
 	public static void init() throws SQLException {
 		pool.init();
+		Configurator.setRootLevel(Level.TRACE);
 	}
 	
 	@AfterClass
@@ -37,54 +46,59 @@ public class CRUDTestCase {
 		pool.close();
 	}
 	
+	@Before
+	public void genUniqueCourse() {
+		uniqueString = LocalDateTime.now().toString();
+		testCourse = new Course(
+			228337,
+			uniqueString,
+			"13 month", 
+			"descr",
+			LocalDateTime.now()
+			);
+	}
+	
 	@Test 
-	public void addCourseTest() throws DAOException {
-		String uniqueString = LocalDateTime.now().toString();
-		Course course = new Course(
-				null,
-				uniqueString,
-				"13 month", 
-				"",
-				LocalDateTime.now()
-				);
-		courseDAO.add(course);
+	public void addCourse() throws DAOException {
+		Integer id = courseDAO.add(testCourse);
 		List<Course> coursesList = courseDAO.getByFilter(new Filter(
-				Tables.Courses.Attr.NAME, uniqueString));
+				Tables.Courses.Attr.COURSE_ID, id.toString()));
 		assertEquals(1, coursesList.size());
-		courseDAO.deleteByIdCascade(coursesList.get(0).getId());
+		courseDAO.deleteByIdCascade(id);
 	}
 	
-	/*
-	public void selectCouseTest() throws DAOException {
-		Filter filter = new Filter();
-		filter.addCondition(FiltrationType.LIKE, Tables.Courses.Attr.NAME.getAttrName(), "%he%");
-		List<Course> coursesList = cd.getByFilter(filter);
-		for (Course u : coursesList) {
-			System.out.println(u.toString());
-		}
+	@Test
+	public void selectCouse() throws DAOException {
+		Integer id = courseDAO.add(testCourse);
+		List<Course> coursesList = 
+				courseDAO.getByFilter(new Filter(Tables.Courses.Attr.NAME, testCourse.getName()));
+		assertEquals(1, coursesList.size());
+		courseDAO.deleteByIdCascade(id);
 	}
 	
-	public void updateCouseTest() throws DAOException {
-		Course course = new Course(
-			1,
-			null,
-			null,
-			null,
-			null
-		);
-		cd.update(Arrays.asList(course));
+	@Test
+	public void updateCouse() throws DAOException {
+		Integer id = courseDAO.add(testCourse);
+		uniqueString += "q";
+		testCourse.setName(uniqueString);
+		testCourse.setId(id);
+		courseDAO.update(testCourse);
+		List<Course> courseList = 
+				courseDAO.getByFilter(new Filter(Tables.Courses.Attr.COURSE_ID, id.toString()));
+		assertEquals(1, courseList.size());
+		assertEquals(uniqueString, courseList.get(0).getName());
+		courseDAO.deleteByIdCascade(id);
 	}
 	
 	public void deleteCouseTest() throws DAOException {
-		cd.deleteByIdsListCascade(Arrays.asList(new Course(
-				12333333,
-				null,
-				"2 years",
-				null,
-				null
-				)));
+		Integer id = courseDAO.add(testCourse);
+		courseDAO.deleteByIdCascade(id);
+		Assert.assertThrows(NoSuchElementException.class, () -> {
+			courseDAO.getById(id);
+		});
 	}
 	
+	/*
 	public void addUserTest() throws DAOException {
 		List<User> addUsersList = new ArrayList<User>();
 		User user = new User(
