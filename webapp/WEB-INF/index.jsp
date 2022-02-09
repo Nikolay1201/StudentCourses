@@ -9,7 +9,8 @@
 		
 	</head>
 	<body>
-		<h2>Hello</h2>
+		<h2>COURSES</h2>
+		<img alt="courses" src="http://wp.americanacademyofleadership.com/wp-content/uploads/2020/07/courses.jpg"/>
 		<form method="GET" action="<c:url value="/page/login"/>">
 			<button type="submit">Login</button>
 		</form>

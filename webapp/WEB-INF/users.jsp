@@ -47,6 +47,9 @@
 					row.getElementsByClassName("email")[0].innerHTML;
 				document.getElementById("description_inputfield").value = 
 					row.getElementsByClassName("description")[0].innerHTML;
+				document.getElementById("role_select").value = 
+					row.getElementsByClassName("role")[0].innerHTML;
+				
 				
 				confirm_button.innerHTML = "<fmt:message key="action.saveChanges"/>";
 				form.action = "<c:url value="/data/changeuser"/>";
@@ -57,6 +60,10 @@
 				let params = new URLSearchParams(new FormData(form)).toString();
 				xhr.open("GET", form.action + "?" + params);
 				xhr.send();
+			}
+			
+			function resetForm() {
+				form.reset();
 			}
 			
 			function deleteUser(user_id) {
@@ -157,7 +164,8 @@
 					</tr>
 				</table>
 			</form>
-			<button id="confirm_user_button" onclick="sendForm()"></button>
+			<button id="confirm_user_button" onclick="sendForm()"><fmt:message key="action.addUser"/></button>
+			<button id="clear_form_button" onclick="resetForm()"><fmt:message key="action.resetForm"/></button>
 		</div>
 		<div id="filter_block">
 			<table>

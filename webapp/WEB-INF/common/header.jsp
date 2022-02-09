@@ -23,15 +23,15 @@
 	<div class="header_link">
 		<a href="<c:url value="/page/courses"/>"><fmt:message key="link.courses"></fmt:message></a>
 	</div>	
+	<div class="header_link">
+		<a href="<c:url value="/page/coursesplans"/>"><fmt:message key="link.coursesplans"></fmt:message></a>
+	</div>
 	<c:if test="${user.role.getId() == 1}">
-		<div class="header_link">
-			<a href="<c:url value="/page/coursesplans"/>"><fmt:message key="link.coursesplans"></fmt:message></a>
-		</div>
 		<div class="header_link">
 			<a href="<c:url value="/page/users"/>"><fmt:message key="link.users"></fmt:message></a>
 		</div>
 		<div class="header_link"> 
-			<a href="<c:url value="/page/student_and_courseplans"/>"><fmt:message key="link.student_and_courseplans"></fmt:message></a>
+			<a href="<c:url value="/page/students_and_courseplans"/>"><fmt:message key="link.student_and_courseplans"></fmt:message></a>
 		</div>
 	</c:if>
 	

@@ -6,6 +6,7 @@
 		left:40%; 
 		top:40%; 
 		background-color: brown;
+		border: 7px solid grey;
 	}
 	#close_error_message_button {
 		float:right;
@@ -14,5 +15,5 @@
 <div id="error_message_box">
 	<div id="error_message">${errmessage}</div>
 	<button id="close_error_message_button"
-	onclick="document.getElementById('error_message_box').remove();">close</button>
+	onclick="document.getElementById('error_message_box').remove();">---X---</button>
 </div>

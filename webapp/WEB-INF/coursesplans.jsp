@@ -57,7 +57,6 @@
 			
 			function findCoursesPlans() {
 				p = new URLSearchParams();
-				let params = "";
 				id_input_value = document.getElementById("id_filter_input").value;
 				if (id_input_value.length != 0) {
 					p.append("k", "course_plan_id");
@@ -67,60 +66,86 @@
 				location.search = p.toString();
 			}
 			
-			window.onload = () => {
-				confirm_button = document.getElementById("confirm_course_plan_button");
-				form = document.getElementById("course_plan_form");
-				confirm_button.innerHTML = "<fmt:message key="action.addCoursePlan"/>";
-				document.getElementById("id_inputfield").oninput = function () {
-					if (this.value == "" || this.value == null) {
-						confirm_button.innerHTML = "<fmt:message key="action.addCoursePlan"/>";
-						form.action = "<c:url value="/data/addcourseplan"/>";
-					} else {
-						confirm_button.innerHTML = "<fmt:message key="action.saveChanges"/>";
-						form.action = "<c:url value="/data/changecourseplan"/>";
+			function addUserToCoursePlan(tr_id) {
+				alert("ok");
+				row = document.getElementById(tr_id);
+				//row.style.display="none";
+				p = new URLSearchParams();
+				p.append("course_plan_id", row.getElementsByClassName("course_plan_id")[0].innerHTML);
+				p.append("student_user_id", "${user.id}");
+				p.append("id", "");
+				xhr.open("GET", "<c:url value="/data/add_usercourseplan"/>?" + p.toString());
+				xhr.send();
+			}
+			
+			function findCourseModal() {
+				window.open("<c:url value="/page/courses"/>", 'Find a course', 'location=yes');
+			}
+			
+			function finTrainerModal() {
+				window.open("<c:url value="/page/users"/>", 'Find a trainer', 'location=yes');
+			}
+			
+			<c:if test="${user.role.getId() == 1}">
+				window.onload = () => {
+					confirm_button = document.getElementById("confirm_course_plan_button");
+					form = document.getElementById("course_plan_form");
+					confirm_button.innerHTML = "<fmt:message key="action.addCoursePlan"/>";
+					document.getElementById("id_inputfield").oninput = function () {
+						if (this.value == "" || this.value == null) {
+							confirm_button.innerHTML = "<fmt:message key="action.addCoursePlan"/>";
+							form.action = "<c:url value="/data/addcourseplan"/>";
+						} else {
+							confirm_button.innerHTML = "<fmt:message key="action.saveChanges"/>";
+							form.action = "<c:url value="/data/changecourseplan"/>";
+						}
 					}
 				}
-			}
+			</c:if>
 			
 		</script>
 	</head>
 	<body>
 		<jsp:include page="common/header.jsp"/>
-		<div id="form_block">
-			<form id="course_plan_form" method="get" enctype="text/html" action="<c:url value="/data/addcourseplan"/>">
-				<table>
-					<tr>
-						<td><label for="id"><fmt:message key="coursePlan.id"/></label></td>
-						<td><input type="text" name="course_plan_id" id="id_inputfield"><br></td>
-					</tr>
-					<tr>
-						<td><label for="course_id"><fmt:message key="coursePlan.courseId"/></label></td>
-						<td><input type="text" name="course_id" id="course_id_inputfield"><br></td>
-					</tr>
-					<tr>
-						<td><label for="trainer_user_id"><fmt:message key="coursePlan.trainerUserId"/></label></td>
-						<td><input type="text" name="trainer_id" id="trainer_user_id_inputfield"><br></td>
-					</tr>
-					<tr>
-						<td><label for="description"><fmt:message key="coursePlan.description"/></label></td>
-						<td><input type="text" name="description" id="description_inputfield"><br></td>
-					</tr>
-					<tr>
-						<td><label for="status"><fmt:message key="coursePlan.status"/></label></td>
-						<td>
-							<select name="status_id" id="status_select" form="course_plan_form">
-								<option value="1"><fmt:message key="coursePlan.statuses.notStarted"/></option>
-								<option value="2"><fmt:message key="coursePlan.statuses.active"/></option>
-								<option value="3"><fmt:message key="coursePlan.statuses.suspended"/></option>
-								<option value="4"><fmt:message key="coursePlan.statuses.finished"/></option>
-								<option value="5"><fmt:message key="coursePlan.statuses.cancelled"/></option>
-							</select>
-						</td>
-					</tr>
-				</table>
-			</form>
-			<button id="confirm_course_plan_button" onclick="sendForm()"></button>
-		</div>
+		<c:if test="${user.role.getId() == 1}">
+			<div id="form_block">
+				<form id="course_plan_form" method="get" enctype="text/html" action="<c:url value="/data/addcourseplan"/>">
+					<table>
+						<tr>
+							<td><label for="id"><fmt:message key="coursePlan.id"/></label></td>
+							<td><input type="text" name="course_plan_id" id="id_inputfield"><br></td>
+						</tr>
+						<tr>
+							<td><label for="course_id"><fmt:message key="coursePlan.courseId"/></label></td>
+							<td><input type="text" name="course_id" id="course_id_inputfield"><br></td>
+							<td><button type="button" onclick="findCourseModal()"><fmt:message key="action.find"/></button></td>
+						</tr>
+						<tr>
+							<td><label for="trainer_user_id"><fmt:message key="coursePlan.trainerUserId"/></label></td>
+							<td><input type="text" name="trainer_id" id="trainer_user_id_inputfield"><br></td>
+							<td><button type="button" onclick="finTrainerModal()"><fmt:message key="action.find"/></button></td>
+						</tr>
+						<tr>
+							<td><label for="description"><fmt:message key="coursePlan.description"/></label></td>
+							<td><input type="text" name="description" id="description_inputfield"><br></td>
+						</tr>
+						<tr>
+							<td><label for="status"><fmt:message key="coursePlan.status"/></label></td>
+							<td>
+								<select name="status_id" id="status_select" form="course_plan_form">
+									<option value="1"><fmt:message key="coursePlan.statuses.notStarted"/></option>
+									<option value="2"><fmt:message key="coursePlan.statuses.active"/></option>
+									<option value="3"><fmt:message key="coursePlan.statuses.suspended"/></option>
+									<option value="4"><fmt:message key="coursePlan.statuses.finished"/></option>
+									<option value="5"><fmt:message key="coursePlan.statuses.cancelled"/></option>
+								</select>
+							</td>
+						</tr>
+					</table>
+				</form>
+				<button id="confirm_course_plan_button" onclick="sendForm()"></button>
+			</div>
+		</c:if>
 		<div id="filter_block">
 			<table>
 				<tr>
@@ -143,14 +168,17 @@
 					<tr id="${coursePlan.id}_tr">
 						<td class="course_plan_id">${coursePlan.id}</td>
 						<td class="course_id">
-							<a href="<c:url value="/page/courses?k=course_id&t=%3D&v=${coursePlan.course.getId()}"/>">
-								${coursePlan.course.getId()}
+							<a href="<c:url value="/page/courses?k=course_id&t=%3D&v=${coursePlan.courseId}"/>">
+								${coursePlan.courseId}
 							</a>
 						</td>
 						<td class="trainer_user_id">
-							<a href="<c:url value="/page/users?k=user_id&t=%3D&v=${coursePlan.trainer.getId()}"/>">
-								${coursePlan.trainer.getId()}
-							</a>
+							<c:if test="${user.role.getId() == 1}">
+								<a href="<c:url value="/page/users?k=user_id&t=%3D&v=${coursePlan.trainerUserId}"/>">
+									${coursePlan.trainerUserId}
+								</a>
+							</c:if>
+							<c:if test="${user.role.getId() == 3}">${coursePlan.trainerUserId}</c:if>
 						</td>
 						<td class="status" data-value="${coursePlan.status.getValue()}">${coursePlan.status}</td>
 						<td class="description">${coursePlan.description}</td>
@@ -159,7 +187,7 @@
 							<td><button onclick="deleteCoursePlan('${coursePlan.id}')">X</button></td>	
 						</c:if>
 						<c:if test="${user.role.getId() == 3}">
-							<td><button onclick="sendRequestForCoursePlan('${coursePlan.id}')">WANNA THIS</button></td>	
+							<td><button onclick="addUserToCoursePlan('${coursePlan.id}_tr')">WANNA THIS</button></td>	
 						</c:if>
 					</tr>
 				</c:forEach>
