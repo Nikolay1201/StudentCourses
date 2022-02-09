@@ -26,21 +26,19 @@ public class DAOImpl implements DAO {
 	private final ConnectionPool connectionPool = ConnectionPoolFactory.getInstance();
 
 	@Override
-	public void init() throws DAOException {
+	public void init() throws InternalDAOException {
 		try {
 			connectionPool.init();
 		} catch (SQLException e) {
-			// LOGGER
 			throw new InternalDAOException(e);
 		}
 	}
 
 	@Override
-	public void close() throws DAOException {
+	public void close() throws InternalDAOException {
 		try {
 			connectionPool.close();
 		} catch (SQLException e) {
-			// LOGGER
 			throw new InternalDAOException(e);
 		}
 	}

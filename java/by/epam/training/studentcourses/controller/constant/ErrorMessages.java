@@ -22,5 +22,7 @@ public class ErrorMessages {
 			"Недопустимая операция";
 	public static final String INVALID_REQUEST = 
 			"Недопустимый запрос";
+	public static final String PAGE_NOT_FOUND = 
+			"Страницы с данным ардесом не существует";
 	
 }

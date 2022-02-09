@@ -23,6 +23,10 @@ public class HttpParams {
 		public static final String DELETE = "add";
 	}
 	
+	public class StatusCode {
+		public static final int SC_UNPROCESSABLE_ENITIY = 422;
+	}
+	
 	public static final String LANG = "lang";
 	public static final String OPERATION_TYPE = "optype";
 	public static final String ENTITY_TYPE = "entity";	

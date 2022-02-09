@@ -45,12 +45,12 @@ public class AuthenticationCommand implements Command {
 		} catch (NoSuchEntityException e) {
 			log.debug("auth wrong login: {}, password: {}", login, password);
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			request.setAttribute(ContextParams.Session.ERROR_MESSAGE,
+			request.setAttribute(ContextParams.Request.ERROR_MESSAGE,
 					ErrorMessages.Authorization.INVALID_LOGIN);
 		} catch (WrongPasswordException e) {
 			log.debug("auth login {}, wrong password: {}", login, password);
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			request.setAttribute(ContextParams.Session.ERROR_MESSAGE,
+			request.setAttribute(ContextParams.Request.ERROR_MESSAGE,
 					ErrorMessages.Authorization.INVALID_PASSWORD);
 		} catch (ServiceException e) {
 			throw new ControllerException(e);

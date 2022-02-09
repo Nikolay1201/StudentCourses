@@ -12,6 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import by.epam.training.studentcourses.controller.constant.DataAccessCommands;
+import by.epam.training.studentcourses.controller.constant.ErrorMessages;
 import by.epam.training.studentcourses.controller.constant.JspPaths;
 import by.epam.training.studentcourses.controller.exception.ControllerException;
 import by.epam.training.studentcourses.controller.exception.InvalidRequestException;
@@ -19,13 +20,15 @@ import by.epam.training.studentcourses.controller.impl.dynamic.AddEntityCommand;
 import by.epam.training.studentcourses.controller.impl.dynamic.AuthenticationCommand;
 import by.epam.training.studentcourses.controller.impl.dynamic.ChangeLocaleCommand;
 import by.epam.training.studentcourses.controller.impl.dynamic.DeleteEntityByIdCommand;
+import by.epam.training.studentcourses.controller.impl.dynamic.GetFileCommand;
 import by.epam.training.studentcourses.controller.impl.dynamic.UpdateEntityCommand;
 import by.epam.training.studentcourses.controller.impl.page.GotoCoursesPageCommand;
 import by.epam.training.studentcourses.controller.impl.page.GotoCoursesPlansPageCommand;
-import by.epam.training.studentcourses.controller.impl.page.GotoIndexPage;
+import by.epam.training.studentcourses.controller.impl.page.GotoIndexPageCommand;
 import by.epam.training.studentcourses.controller.impl.page.GotoLoginPageCommand;
 import by.epam.training.studentcourses.controller.impl.page.GotoProfilePageCommand;
 import by.epam.training.studentcourses.controller.impl.page.GotoSandCPageCommand;
+import by.epam.training.studentcourses.controller.impl.page.GotoTestPageCommand;
 import by.epam.training.studentcourses.controller.impl.page.GotoUsersPageCommand;
 import by.epam.training.studentcourses.controller.impl.page.LogoutCommand;
 import by.epam.training.studentcourses.service.Service;
@@ -42,10 +45,11 @@ public class Invoker {
 
 	public static void init() {
 		// pages
-		commandMap.put("GET/page" + null, new GotoIndexPage());
-		commandMap.put("GET/page" + "", new GotoIndexPage());
-		commandMap.put("GET/page" + "/", new GotoIndexPage());
-		commandMap.put("GET/page" + JspPaths.INDEX, new GotoIndexPage());
+		commandMap.put("GET/page" + null, new GotoIndexPageCommand());
+		commandMap.put("GET/page" + "", new GotoIndexPageCommand());
+		commandMap.put("GET/page" + "/", new GotoIndexPageCommand());
+		commandMap.put("GET/page" + JspPaths.TEST, new GotoTestPageCommand());
+		commandMap.put("GET/page" + JspPaths.INDEX, new GotoIndexPageCommand());
 		commandMap.put("GET/page" + JspPaths.LOGIN, new GotoLoginPageCommand());
 		commandMap.put("GET/page" + JspPaths.PROFILE, new GotoProfilePageCommand());
 		commandMap.put("GET/page" + JspPaths.USERS, new GotoUsersPageCommand());
@@ -57,6 +61,7 @@ public class Invoker {
 		// dynamic
 		commandMap.put("GET/data" + DataAccessCommands.AUTH, new AuthenticationCommand());
 		commandMap.put("GET/data" + DataAccessCommands.CHANGE_LOCALE, new ChangeLocaleCommand());
+		commandMap.put("POST/data/file", new GetFileCommand());
 
 		commandMap.put("GET/data" + DataAccessCommands.ADD_USER, new AddEntityCommand<User>(service.getUserService()) {
 			@Override
@@ -127,21 +132,21 @@ public class Invoker {
 					}
 				});
 		
-		commandMap.put("GET/data" + DataAccessCommands.ADD_USER_AND_COURSEPLAN,
+		commandMap.put("GET/data" + DataAccessCommands.ADD_USER_TO_COURSEPLAN,
 				new AddEntityCommand<StudentsHaveCoursesPlans>(service.getStudentsHaveCoursesPlansService()) {
 					@Override
 					public List<StudentsHaveCoursesPlans> parseEntities(Map paramsMap) throws InvalidRequestException {
 						return parser.parseStudentsHaveCoursesPlans(paramsMap);
 					}
 				});
-		commandMap.put("GET/data" + DataAccessCommands.UPDATE_COURSE_PLAN,
+		commandMap.put("GET/data" + DataAccessCommands.UPDATE_USER_TO_COURSEPLAN,
 				new UpdateEntityCommand<StudentsHaveCoursesPlans>(service.getStudentsHaveCoursesPlansService()) {
 					@Override
 					public List<StudentsHaveCoursesPlans> parseEntities(Map paramsMap) throws InvalidRequestException {
 						return parser.parseStudentsHaveCoursesPlans(paramsMap);
 					}
 				});
-		commandMap.put("GET/data" + DataAccessCommands.DELETE_COURSE_PLAN,
+		commandMap.put("GET/data" + DataAccessCommands.DELETE_USER_OF_COURSEPLAN,
 				new DeleteEntityByIdCommand<StudentsHaveCoursesPlans>(service.getStudentsHaveCoursesPlansService()) {
 
 					@Override
@@ -158,7 +163,7 @@ public class Invoker {
 		log.trace("command: {}", commandName);
 		Command command = commandMap.get(commandName);
 		if (command == null) {
-			throw new InvalidRequestException();
+			throw new InvalidRequestException(ErrorMessages.PAGE_NOT_FOUND);
 		}
 		return command.execute(request, response);
 	}

@@ -21,33 +21,37 @@ import by.epam.training.studentcourses.controller.exception.InternalControllerEx
 import by.epam.training.studentcourses.controller.exception.InvalidRequestException;
 import by.epam.training.studentcourses.controller.impl.EntityParserImpl;
 import by.epam.training.studentcourses.service.EntityCRUDService;
+import by.epam.training.studentcourses.service.ServiceFactory;
+import by.epam.training.studentcourses.service.StudentsHaveCoursesPlansService;
+import by.epam.training.studentcourses.service.UserService;
 import by.epam.training.studentcourses.service.exception.InternalServiceException;
 import by.epam.training.studentcourses.service.exception.InvalidEntitiesException;
 import by.epam.training.studentcourses.service.exception.NotAllowedException;
 import by.epam.training.studentcourses.util.TableAttr;
+import by.epam.training.studentcourses.util.constant.Tables;
 import by.epam.training.studentcourses.util.entity.User;
 
-public abstract class AddEntityCommand<T> implements Command {
+public abstract class AddStudentToCoursePlanCommand implements Command {
 
-	private static Logger log = LogManager.getLogger(AddEntityCommand.class);
-	private final EntityCRUDService<T> service;
+	private static Logger log = LogManager.getLogger(AddStudentToCoursePlanCommand.class);
+	private static final StudentsHaveCoursesPlansService service = ServiceFactory.getInstance()
+			.getStudentsHaveCoursesPlansService();
 	protected static final EntityParser parser = EntityParserImpl.getInstance();
-
-	protected AddEntityCommand(EntityCRUDService<T> service) {
-		this.service = service;
-	}
-
-	public abstract List<T> parseEntities(Map paramMap) throws InvalidRequestException;
 
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ControllerException, IOException {
-		List<T> entitiesList = parseEntities(request.getParameterMap());
-		if (!entitiesList.isEmpty())
-			log.debug("new course: {}", entitiesList.get(0));
+		Integer courseId;
+		Integer userId;
+		try {
+			courseId = Integer.parseInt(request.getParameter(Tables.Courses.Attr.COURSE_ID.getAttrName()));
+			userId = Integer.parseInt(request.getParameter(Tables.Users.Attr.USER_ID.getAttrName()));
+		} catch (NumberFormatException e) {
+			throw new InvalidRequestException(e);
+		}
 		try {
 			service.add((User) request.getSession().getAttribute(ContextParams.Session.USER), entitiesList);
-		} catch (InvalidEntitiesException e) {
+		} catch (InvalidRequestException e) {
 			StringBuilder errorMessage = new StringBuilder(ErrorMessages.EntityCRUD.INVALID_PARAMETERS);
 			errorMessage.append("<br>");
 			if (!e.getInvalidAttrsLists().isEmpty()) {

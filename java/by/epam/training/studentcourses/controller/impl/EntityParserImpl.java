@@ -20,15 +20,16 @@ import by.epam.training.studentcourses.util.entity.User;
 import by.epam.training.studentcourses.util.entity.UserRole;
 
 public class EntityParserImpl implements EntityParser {
-	
+
 	private static EntityParser instance = new EntityParserImpl();
-	
+
 	public static EntityParser getInstance() {
 		return instance;
 	}
-	
-	private EntityParserImpl() {}
-	
+
+	private EntityParserImpl() {
+	}
+
 	@Override
 	public List<User> parseUsers(Map<String, String[]> paramsMap) throws InvalidRequestException {
 		List<User> usersList = new ArrayList<>();
@@ -37,60 +38,69 @@ public class EntityParserImpl implements EntityParser {
 			return usersList;
 		}
 		User user;
-		for (int i = 0; i < idsArr.length; i ++)  {
+		for (int i = 0; i < idsArr.length; i++) {
 			user = new User();
-			
+
 			try {
 				user.setId(Integer.parseInt(paramsMap.get(Tables.Users.Attr.USER_ID.getAttrName())[i]));
-			} catch (RuntimeException e) { } 
-			
+			} catch (RuntimeException e) {
+			}
+
 			try {
-				user.setRole(
-						UserRole.valueOf(paramsMap.get(Tables.Users.Attr.ROLE_ID.getAttrName())[i]));
-			} catch (RuntimeException e) { }
-				
+				user.setRole(UserRole.valueOf(paramsMap.get(Tables.Users.Attr.ROLE_ID.getAttrName())[i]));
+			} catch (RuntimeException e) {
+			}
+
 			try {
 				user.setName(paramsMap.get(Tables.Users.Attr.NAME.getAttrName())[i]);
-			} catch (RuntimeException e) { }
-			
+			} catch (RuntimeException e) {
+			}
+
 			try {
 				user.setSurename(paramsMap.get(Tables.Users.Attr.SURENAME.getAttrName())[i]);
-			} catch (RuntimeException e) { }
-			
+			} catch (RuntimeException e) {
+			}
+
 			try {
 				user.setPatronymic(paramsMap.get(Tables.Users.Attr.PATRONYMIC.getAttrName())[i]);
-			} catch (RuntimeException e) { }
-			
+			} catch (RuntimeException e) {
+			}
+
 			try {
-				user.setBirthDate(
-					LocalDate.parse(paramsMap.get(Tables.Users.Attr.BIRTH_DATE.getAttrName())[i]));
-			} catch (RuntimeException e) { }
-			
+				user.setBirthDate(LocalDate.parse(paramsMap.get(Tables.Users.Attr.BIRTH_DATE.getAttrName())[i]));
+			} catch (RuntimeException e) {
+			}
+
 			try {
 				user.setPhoneNumber(paramsMap.get(Tables.Users.Attr.PHONE_NUMBER.getAttrName())[i]);
-			} catch (RuntimeException e) { }
-			
+			} catch (RuntimeException e) {
+			}
+
 			try {
 				user.setEmail(paramsMap.get(Tables.Users.Attr.EMAIL.getAttrName())[i]);
-			} catch (RuntimeException e) { }
-			
+			} catch (RuntimeException e) {
+			}
+
 			try {
 				user.setLogin(paramsMap.get(Tables.Users.Attr.LOGIN.getAttrName())[i]);
-			} catch (RuntimeException e) { }
-			
+			} catch (RuntimeException e) {
+			}
+
 			try {
 				user.setPassword(paramsMap.get(Tables.Users.Attr.PASSWORD.getAttrName())[i]);
-			} catch (RuntimeException e) { }
-			
+			} catch (RuntimeException e) {
+			}
+
 			try {
 				user.setDescription((paramsMap.get(Tables.Users.Attr.DESCRIPTION.getAttrName())[i]));
-			} catch (RuntimeException e) { }
-			
+			} catch (RuntimeException e) {
+			}
+
 			usersList.add(user);
 		}
 		return usersList;
 	}
-	
+
 	@Override
 	public Filter parseFilter(Map<String, String[]> paramsMap) throws InvalidRequestException {
 		Filter filter = new Filter();
@@ -101,10 +111,9 @@ public class EntityParserImpl implements EntityParser {
 		if (conditionsNamesArr == null) {
 			return filter;
 		}
-		for (int i = 0; i < conditionsNamesArr.length; i ++) {
+		for (int i = 0; i < conditionsNamesArr.length; i++) {
 			try {
-				filtrationType = FiltrationType.getByTextRepr(
-						paramsMap.get(HttpParams.Filter.FILTRATION_TYPE)[i]);
+				filtrationType = FiltrationType.getByTextRepr(paramsMap.get(HttpParams.Filter.FILTRATION_TYPE)[i]);
 				attrName = paramsMap.get(HttpParams.Filter.ATTR_NAME)[i];
 				attrValue = paramsMap.get(HttpParams.Filter.ATTR_VALUE)[i];
 				if (attrName == null || attrValue == null) {
@@ -113,7 +122,7 @@ public class EntityParserImpl implements EntityParser {
 				filter.addCondition(filtrationType, attrName, attrValue);
 			} catch (RuntimeException e) {
 				throw new InvalidRequestException(e);
-			} 
+			}
 		}
 		return filter;
 	}
@@ -126,78 +135,84 @@ public class EntityParserImpl implements EntityParser {
 			return coursesList;
 		}
 		Course course;
-		for (int i = 0; i < idsArr.length; i ++)  {
+		for (int i = 0; i < idsArr.length; i++) {
 			course = new Course();
-			
+
 			try {
 				course.setId(Integer.parseInt(paramsMap.get(Tables.Courses.Attr.COURSE_ID.getAttrName())[i]));
-			} catch (RuntimeException e) { } 
-			
+			} catch (RuntimeException e) {
+			}
+
 			try {
 				course.setName(paramsMap.get(Tables.Courses.Attr.NAME.getAttrName())[i]);
-			} catch (RuntimeException e) { } 
-			
+			} catch (RuntimeException e) {
+			}
+
 			try {
 				course.setDuration(paramsMap.get(Tables.Courses.Attr.DURATION.getAttrName())[i]);
-			} catch (RuntimeException e) { } 
-			
+			} catch (RuntimeException e) {
+			}
+
 			try {
 				course.setDescription(paramsMap.get(Tables.Courses.Attr.DESCRIPTION.getAttrName())[i]);
-			} catch (RuntimeException e) { } 
-			
+			} catch (RuntimeException e) {
+			}
+
 			coursesList.add(course);
-		} 
-		
+		}
+
 		return coursesList;
-				
+
 	}
 
 	@Override
 	public List<CoursePlan> parseCoursePlans(Map<String, String[]> paramsMap) {
 		List<CoursePlan> coursePlansList = new ArrayList<>();
-		String[] idsArr = paramsMap.get(Tables.CoursesPlans.Attr.COURSE_PLAN_ID.getAttrName());
+		String[] idsArr = paramsMap.get(Tables.CoursesPlans.Attr.ID.getAttrName());
 		if (idsArr == null) {
 			return coursePlansList;
 		}
 		CoursePlan coursePlan;
-		for (int i = 0; i < idsArr.length; i ++)  {
+		for (int i = 0; i < idsArr.length; i++) {
 			coursePlan = new CoursePlan();
-			
+
 			try {
-				coursePlan.setId(Integer.parseInt(paramsMap.get(Tables.CoursesPlans.Attr.COURSE_PLAN_ID.getAttrName())[i]));
-			} catch (RuntimeException e) { } 
-			
+				coursePlan.setId(Integer.parseInt(paramsMap.get(Tables.CoursesPlans.Attr.ID.getAttrName())[i]));
+			} catch (RuntimeException e) {
+			}
+
 			try {
-				Course course = new Course();
-				course.setId(Integer.parseInt(paramsMap.get(Tables.CoursesPlans.Attr.COURSE_ID.getAttrName())[i]));
-				coursePlan.setCourse(course);
-			} catch (RuntimeException e) { } 
-			
+				coursePlan.setCourseId(
+						Integer.parseInt(paramsMap.get(Tables.CoursesPlans.Attr.COURSE_ID.getAttrName())[i]));
+			} catch (RuntimeException e) {
+			}
+
 			try {
-				User trainer = new User();
-				trainer.setId(Integer.parseInt(paramsMap.get(Tables.CoursesPlans.Attr.TRAINER_USER_ID.getAttrName())[i]));
-				coursePlan.setTrainer(trainer);
-			} catch (RuntimeException e) { } 
+				coursePlan.setTrainerId(
+						Integer.parseInt(paramsMap.get(Tables.CoursesPlans.Attr.TRAINER_USER_ID.getAttrName())[i]));
+			} catch (RuntimeException e) {
+			}
 
 			try {
 				coursePlan.setStatus(CoursePlanStatus
 						.getByVal(Integer.valueOf(paramsMap.get(Tables.CoursesPlans.Attr.STATUS_ID.getAttrName())[i])));
 			} catch (RuntimeException e) {
 			}
-			
+
 			try {
 				coursePlan.setDescription(paramsMap.get(Tables.CoursesPlans.Attr.DESCRIPTION.getAttrName())[i]);
-			} catch (RuntimeException e) { } 
-			
+			} catch (RuntimeException e) {
+			}
+
 			coursePlansList.add(coursePlan);
-		} 
-		
+		}
+
 		return coursePlansList;
 	}
 
 	@Override
 	public List<Lesson> parseLessons(Map<String, String[]> paramsMap) {
-		// TODO 
+		// TODO
 		return null;
 	}
 
@@ -210,31 +225,38 @@ public class EntityParserImpl implements EntityParser {
 			return studentsHaveCoursePlansList;
 		}
 		StudentsHaveCoursesPlans entity = new StudentsHaveCoursesPlans();
-		for (int i = 0; i < idsArr.length; i ++)  {
+		for (int i = 0; i < idsArr.length; i++) {
 			try {
 				entity.setId(Integer.parseInt(paramsMap.get(Tables.StudentsHaveCoursesPlans.Attr.ID.getAttrName())[i]));
-			} catch (RuntimeException e) { } 
-			
+			} catch (RuntimeException e) {
+			}
+
 			try {
-				entity.setCoursePlanId(Integer.parseInt(paramsMap.get(Tables.StudentsHaveCoursesPlans.Attr.COURSE_PLAN_ID.getAttrName())[i]));
-			} catch (RuntimeException e) { } 
-			
+				entity.setCoursePlanId(Integer
+						.parseInt(paramsMap.get(Tables.StudentsHaveCoursesPlans.Attr.COURSE_PLAN_ID.getAttrName())[i]));
+			} catch (RuntimeException e) {
+			}
+
 			try {
-				entity.setId(Integer.parseInt(paramsMap.get(Tables.StudentsHaveCoursesPlans.Attr.STUDENT_USER_ID.getAttrName())[i]));
-			} catch (RuntimeException e) { } 
+				entity.setStudentUserId(Integer.parseInt(
+						paramsMap.get(Tables.StudentsHaveCoursesPlans.Attr.STUDENT_USER_ID.getAttrName())[i]));
+			} catch (RuntimeException e) {
+			}
 
 			try {
 				entity.setReview(paramsMap.get(Tables.StudentsHaveCoursesPlans.Attr.REVIEW.getAttrName())[i]);
 			} catch (RuntimeException e) {
 			}
-			
+
 			try {
-				entity.setMark(Integer.parseInt(paramsMap.get(Tables.StudentsHaveCoursesPlans.Attr.MARK.getAttrName())[i]));
-			} catch (RuntimeException e) { } 
-			
+				entity.setMark(
+						Integer.parseInt(paramsMap.get(Tables.StudentsHaveCoursesPlans.Attr.MARK.getAttrName())[i]));
+			} catch (RuntimeException e) {
+			}
+
 			studentsHaveCoursePlansList.add(entity);
-		} 
-		
+		}
+
 		return studentsHaveCoursePlansList;
 	}
 

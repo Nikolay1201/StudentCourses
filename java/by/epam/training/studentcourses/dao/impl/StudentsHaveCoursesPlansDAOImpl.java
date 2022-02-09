@@ -19,11 +19,8 @@ public class StudentsHaveCoursesPlansDAOImpl extends EntityAbstractDAO<StudentsH
 
 	@Override
 	public boolean validateEntityForInsert(StudentsHaveCoursesPlans entity) {
-		return entity.getId() != null &&
-				entity.getStudentId() != null &&
-				entity.getCoursePlanId() != null &&
-				entity.getMark() != null &&
-				entity.getReview() != null;
+		return  entity.getStudentUserId() != null &&
+				entity.getCoursePlanId() != null;
 	}
 
 	@Override
@@ -32,7 +29,7 @@ public class StudentsHaveCoursesPlansDAOImpl extends EntityAbstractDAO<StudentsH
 		PrepStHelper.fill(ps, skipNull, new Object[] {
 			entity.getId(),
 			entity.getCoursePlanId(),
-			entity.getStudentId(),
+			entity.getStudentUserId(),
 			entity.getMark(), 
 			entity.getReview()
 			}		
@@ -43,8 +40,8 @@ public class StudentsHaveCoursesPlansDAOImpl extends EntityAbstractDAO<StudentsH
 	public StudentsHaveCoursesPlans createEntityByResultSet(ResultSet rs) throws SQLException {
 		return new StudentsHaveCoursesPlans(
 			MySQLTypeConverter.toInternalInt(rs.getInt(Tables.StudentsHaveCoursesPlans.Attr.ID.getAttrName())), 
-			MySQLTypeConverter.toInternalInt(rs.getInt(Tables.StudentsHaveCoursesPlans.Attr.COURSE_PLAN_ID.getAttrName())),
 			MySQLTypeConverter.toInternalInt(rs.getInt(Tables.StudentsHaveCoursesPlans.Attr.STUDENT_USER_ID.getAttrName())),
+			MySQLTypeConverter.toInternalInt(rs.getInt(Tables.StudentsHaveCoursesPlans.Attr.COURSE_PLAN_ID.getAttrName())),
 			MySQLTypeConverter.toInternalInt(rs.getInt(Tables.StudentsHaveCoursesPlans.Attr.MARK.getAttrName())), 
 			MySQLTypeConverter.toInternalString(rs.getString(Tables.StudentsHaveCoursesPlans.Attr.REVIEW.getAttrName())) 
 			);
@@ -55,7 +52,7 @@ public class StudentsHaveCoursesPlansDAOImpl extends EntityAbstractDAO<StudentsH
 		return new boolean[] {
 				entity.getId() == null,
 				entity.getCoursePlanId() == null,
-				entity.getStudentId() == null, 
+				entity.getStudentUserId() == null, 
 				entity.getMark() == null,
 				entity.getReview() == null,
 		};

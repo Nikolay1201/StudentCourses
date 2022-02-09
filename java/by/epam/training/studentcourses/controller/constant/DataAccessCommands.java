@@ -16,9 +16,11 @@ public class DataAccessCommands {
 	public static final String UPDATE_COURSE_PLAN = "/changecourseplan";
 	public static final String DELETE_COURSE_PLAN = "/deletecourseplan";
 	
-	public static final String ADD_USER_AND_COURSEPLAN = "/add_usercourseplan";
-	public static final String UPDATE_ADD_USER_AND_COURSEPLAN = "/change_usercourseplan";
-	public static final String DELETE_ADD_USER_AND_COURSEPLAN = "/delete_usercourseplan";
+	public static final String ADD_USER_TO_COURSEPLAN = "/add_usercourseplan";
+	public static final String UPDATE_USER_TO_COURSEPLAN = "/change_usercourseplan";
+	public static final String DELETE_USER_OF_COURSEPLAN = "/delete_usercourseplan";
+	
+	public static final String ADD_STUDENT_TO_COURSEPLAN = "/add_user_for_courseplan";
 	
 	
 }

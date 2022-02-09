@@ -12,7 +12,7 @@ import by.epam.training.studentcourses.controller.Command;
 import by.epam.training.studentcourses.controller.EntityParser;
 import by.epam.training.studentcourses.controller.constant.ContextParams;
 import by.epam.training.studentcourses.controller.constant.JspPaths;
-import by.epam.training.studentcourses.controller.exception.InternalControllerException;
+import by.epam.training.studentcourses.controller.exception.ControllerException;
 import by.epam.training.studentcourses.controller.impl.EntityParserImpl;
 import by.epam.training.studentcourses.service.CoursePlanService;
 import by.epam.training.studentcourses.service.ServiceFactory;
@@ -29,7 +29,7 @@ public class GotoCoursesPlansPageCommand implements Command {
 	private static final EntityParser parser = EntityParserImpl.getInstance();
 
 	@Override
-	public String execute(HttpServletRequest request, HttpServletResponse response) throws InternalControllerException {
+	public String execute(HttpServletRequest request, HttpServletResponse response) throws ControllerException {
 		List<CoursePlan> coursesPlansList = null;
 		List<CoursePlan> myCoursesPlansList = null;
 		User user = (User)request.getSession().getAttribute(ContextParams.Session.USER);
@@ -41,10 +41,12 @@ public class GotoCoursesPlansPageCommand implements Command {
 				myCoursesPlansList = coursePlanService.getCoursesPlansOfUser(user, user);
 			}
 		} catch (ServiceException e) {
-			throw new InternalControllerException(e);
+			throw new ControllerException(e);
 		} catch (by.epam.training.studentcourses.controller.exception.InvalidRequestException e) {
-			
+			log.debug(e);
 		}
+		request.removeAttribute(ContextParams.Request.ENTITIES_LIST);
+		request.removeAttribute(ContextParams.Request.MY_COURSES_PLANS_LIST);
 		request.setAttribute(ContextParams.Request.ENTITIES_LIST, coursesPlansList);
 		request.setAttribute(ContextParams.Request.MY_COURSES_PLANS_LIST, coursesPlansList);
 		return JspPaths.COURSES_PLANS;

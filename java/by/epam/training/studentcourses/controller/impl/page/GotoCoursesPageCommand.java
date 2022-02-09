@@ -20,7 +20,6 @@ import by.epam.training.studentcourses.service.exception.ServiceException;
 import by.epam.training.studentcourses.util.Filter;
 import by.epam.training.studentcourses.util.entity.Course;
 import by.epam.training.studentcourses.util.entity.User;
-import by.epam.training.studentcourses.util.entity.UserRole;
 
 public class GotoCoursesPageCommand implements Command {
 
@@ -42,6 +41,7 @@ public class GotoCoursesPageCommand implements Command {
 		} catch (by.epam.training.studentcourses.controller.exception.InvalidRequestException e) {
 			
 		}
+		request.removeAttribute(ContextParams.Request.ENTITIES_LIST);
 		request.setAttribute(ContextParams.Request.ENTITIES_LIST, courseList);
 		return JspPaths.COURSES;
 	}

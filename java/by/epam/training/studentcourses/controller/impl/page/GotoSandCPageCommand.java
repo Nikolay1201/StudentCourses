@@ -41,6 +41,7 @@ public class GotoSandCPageCommand implements Command {
 		} catch (by.epam.training.studentcourses.controller.exception.InvalidRequestException e) {
 
 		}
+		request.removeAttribute(ContextParams.Request.ENTITIES_LIST);
 		request.setAttribute(ContextParams.Request.ENTITIES_LIST, entitiesList);
 		return JspPaths.STUDENTS_AND_COURSES_PLANS;
 	}

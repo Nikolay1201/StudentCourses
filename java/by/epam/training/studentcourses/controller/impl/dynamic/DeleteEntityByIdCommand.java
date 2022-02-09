@@ -13,17 +13,13 @@ import org.apache.logging.log4j.Logger;
 import by.epam.training.studentcourses.controller.Command;
 import by.epam.training.studentcourses.controller.EntityParser;
 import by.epam.training.studentcourses.controller.constant.ContextParams;
-import by.epam.training.studentcourses.controller.constant.ErrorMessages;
-import by.epam.training.studentcourses.controller.constant.JspPaths;
 import by.epam.training.studentcourses.controller.exception.ControllerException;
 import by.epam.training.studentcourses.controller.exception.InternalControllerException;
 import by.epam.training.studentcourses.controller.exception.InvalidRequestException;
+import by.epam.training.studentcourses.controller.exception.NotAllowedException;
 import by.epam.training.studentcourses.controller.impl.EntityParserImpl;
 import by.epam.training.studentcourses.service.EntityCRUDService;
 import by.epam.training.studentcourses.service.exception.InternalServiceException;
-import by.epam.training.studentcourses.service.exception.InvalidEntityException;
-import by.epam.training.studentcourses.service.exception.NotAllowedException;
-import by.epam.training.studentcourses.service.exception.ServiceException;
 import by.epam.training.studentcourses.util.Identifiable;
 import by.epam.training.studentcourses.util.entity.User;
 
@@ -48,18 +44,14 @@ public abstract class DeleteEntityByIdCommand<T extends Identifiable> implements
 		try {
 			service.deleteById((User) request.getSession().getAttribute(ContextParams.Session.USER),
 					entitiesList.get(0).getId());
-			return null;
-		} catch (InvalidEntityException e) {
-			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			request.setAttribute(ContextParams.Session.ERROR_MESSAGE, ErrorMessages.EntityCRUD.INVALID_PARAMETERS);
-		} catch (NotAllowedException e) {
-			throw new by.epam.training.studentcourses.controller.exception.NotAllowedException(e);
+		} catch (by.epam.training.studentcourses.service.exception.NotAllowedException e) {
+			throw new NotAllowedException(e);
+		} catch (by.epam.training.studentcourses.service.exception.InvalidRequestException e) {
+			throw new InvalidRequestException(e);
 		} catch (InternalServiceException e) {
 			throw new InternalControllerException(e);
-		} catch (ServiceException e) {
-			throw new ControllerException(e);
 		}
-		return JspPaths.ERROR;
+		return null;
 	}
 
 }

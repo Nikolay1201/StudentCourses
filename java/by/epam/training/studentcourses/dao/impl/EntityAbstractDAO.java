@@ -12,12 +12,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import by.epam.training.studentcourses.dao.EntityDAO;
-import by.epam.training.studentcourses.dao.exception.DAOException;
 import by.epam.training.studentcourses.dao.exception.DBErrorMessages;
 import by.epam.training.studentcourses.dao.exception.InternalDAOException;
 import by.epam.training.studentcourses.dao.exception.InvalidEntityException;
 import by.epam.training.studentcourses.dao.exception.InvalidRequestException;
 import by.epam.training.studentcourses.dao.exception.NoSuchEntityException;
+import by.epam.training.studentcourses.dao.impl.dbmeta.MySQLErrorCodes;
 import by.epam.training.studentcourses.dao.impl.pool.ConnectionPool;
 import by.epam.training.studentcourses.dao.impl.pool.ConnectionPoolFactory;
 import by.epam.training.studentcourses.util.Filter;
@@ -44,7 +44,7 @@ public abstract class EntityAbstractDAO<T extends Identifiable> implements Entit
 	}
 
 	@Override
-	public List<Integer> add(List<T> entityList) throws DAOException {
+	public List<Integer> add(List<T> entityList) throws InvalidEntityException, InternalDAOException {
 		if (entityList.isEmpty()) {
 			return new ArrayList<>();
 		}
@@ -64,7 +64,18 @@ public abstract class EntityAbstractDAO<T extends Identifiable> implements Entit
 					log.debug(ps);
 					ps.addBatch();
 				}
-				ps.executeBatch();
+				try {
+					ps.executeBatch();
+				} catch (SQLException e) {
+					switch (e.getErrorCode()) {
+					case MySQLErrorCodes.ER_NO_REFERENCED_ROW:
+					case MySQLErrorCodes.ER_NO_REFERENCED_ROW_2:
+					case MySQLErrorCodes.ER_DUP_ENTRY:
+						throw new InvalidEntityException(e);
+					}
+					log.debug("add error, code: {} / mysql: {}", e.getSQLState(), e.getErrorCode());
+					throw new InternalDAOException(e);
+				}
 				conn.commit();
 				List<Integer> insertedIdsList = new ArrayList<>();
 				insertedIdsRs = ps.getGeneratedKeys();
@@ -72,6 +83,11 @@ public abstract class EntityAbstractDAO<T extends Identifiable> implements Entit
 					insertedIdsList.add(insertedIdsRs.getInt(1));
 				}
 				return insertedIdsList;
+			} catch (SQLException e) {
+				if (conn != null) {
+					conn.rollback();
+				}
+				throw e;
 			} finally {
 				if (ps != null) {
 					ps.close();
@@ -86,11 +102,11 @@ public abstract class EntityAbstractDAO<T extends Identifiable> implements Entit
 	}
 
 	@Override
-	public List<T> getByFilter(Filter filter) throws DAOException {
+	public List<T> getByFilter(Filter filter) throws InvalidRequestException, InternalDAOException {
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		List<T> entityList = new ArrayList<T>();
+		List<T> entityList = new ArrayList<>();
 		T entity;
 		try {
 			try {
@@ -103,7 +119,12 @@ public abstract class EntityAbstractDAO<T extends Identifiable> implements Entit
 				ps = conn.prepareStatement(PrepStHelper.genSelectByFilterStatement(tableName, filter));
 				PrepStHelper.fill(ps, true, filter);
 				log.trace(ps);
-				rs = ps.executeQuery();
+				try {
+					rs = ps.executeQuery();
+				} catch (SQLException e) {
+					log.debug("select error, code: {} / mysql: {}", e.getSQLState(), e.getErrorCode());
+					throw new InvalidRequestException(e);
+				}
 				while (rs.next()) {
 					entity = createEntityByResultSet(rs);
 					entityList.add(entity);
@@ -126,7 +147,7 @@ public abstract class EntityAbstractDAO<T extends Identifiable> implements Entit
 	}
 
 	@Override
-	public void update(List<T> entityList) throws DAOException {
+	public void update(List<T> entityList) throws InvalidEntityException, InternalDAOException {
 		if (entityList.isEmpty()) {
 			return;
 		}
@@ -152,17 +173,33 @@ public abstract class EntityAbstractDAO<T extends Identifiable> implements Entit
 					if (nullAttrCount == tableAttributes.length - 1) {
 						continue;
 					}
-					ps = conn.prepareStatement(
-							PrepStHelper.genUpdateByIdStatement(tableName, tableAttributes, nullAttributesStates, idAttr));
+					ps = conn.prepareStatement(PrepStHelper.genUpdateByIdStatement(tableName, tableAttributes,
+							nullAttributesStates, idAttr));
 					fillPrepStatementWithResultSet(entity, ps, true);
 					ps.setInt(ps.getParameterMetaData().getParameterCount(), entity.getId());
 					log.trace(ps);
 					ps.addBatch();
 				}
 				if (ps != null) {
-					ps.executeBatch();
+					try {
+						ps.executeBatch();
+					} catch (SQLException e) {
+						switch (e.getErrorCode()) {
+						case MySQLErrorCodes.ER_NO_REFERENCED_ROW:
+						case MySQLErrorCodes.ER_NO_REFERENCED_ROW_2:
+						case MySQLErrorCodes.ER_DUP_ENTRY:
+							throw new InvalidEntityException(e);
+						}
+						log.debug("update error, code: {} / mysql: {}", e.getSQLState(), e.getErrorCode());
+						throw new InternalDAOException(e);
+					}
 					conn.commit();
 				}
+			} catch (SQLException e) {
+				if (conn != null) {
+					conn.rollback();
+				}
+				throw e;
 			} finally {
 				if (ps != null) {
 					ps.close();
@@ -178,7 +215,8 @@ public abstract class EntityAbstractDAO<T extends Identifiable> implements Entit
 	}
 
 	@Override
-	public void deleteByIdsListCascade(List<Integer> entitiesIdsList) throws DAOException {
+	public void deleteByIdsListCascade(List<Integer> entitiesIdsList)
+			throws InvalidRequestException, InternalDAOException {
 		if (entitiesIdsList.isEmpty()) {
 			return;
 		}
@@ -198,8 +236,21 @@ public abstract class EntityAbstractDAO<T extends Identifiable> implements Entit
 					log.trace(ps);
 					ps.addBatch();
 				}
-				ps.executeBatch();
+				try {
+					ps.executeBatch();
+				} catch (SQLException e) {
+					switch (e.getErrorCode()) {
+						
+					}
+					log.debug("delete error, code: {} / mysql: {}", e.getSQLState(), e.getErrorCode());
+					throw new InternalDAOException(e);
+				}
 				conn.commit(); // IT WORKS WITHOUT COMMIT!??? how
+			} catch (SQLException e) {
+				if (conn != null) {
+					conn.rollback();
+				}
+				throw e;
 			} finally {
 				if (ps != null) {
 					ps.close();
@@ -214,7 +265,7 @@ public abstract class EntityAbstractDAO<T extends Identifiable> implements Entit
 	}
 
 	@Override
-	public Integer add(T entity) throws DAOException {
+	public Integer add(T entity) throws NoSuchEntityException, InvalidEntityException, InternalDAOException {
 		List<Integer> entitiesList = add(Arrays.asList(entity));
 		if (entitiesList.isEmpty()) {
 			throw new NoSuchEntityException();
@@ -223,7 +274,7 @@ public abstract class EntityAbstractDAO<T extends Identifiable> implements Entit
 	}
 
 	@Override
-	public T getById(Integer id) throws DAOException {
+	public T getById(Integer id) throws NoSuchEntityException, InvalidRequestException, InternalDAOException {
 		List<T> entityList = getByFilter(new Filter(idAttr.getAttrName(), String.valueOf(id)));
 		if (entityList.isEmpty()) {
 			throw new NoSuchEntityException();
@@ -232,12 +283,12 @@ public abstract class EntityAbstractDAO<T extends Identifiable> implements Entit
 	}
 
 	@Override
-	public void update(T entity) throws DAOException {
+	public void update(T entity) throws InvalidEntityException, InternalDAOException {
 		update(Arrays.asList(entity));
 	}
 
 	@Override
-	public void deleteByIdCascade(Integer id) throws DAOException {
+	public void deleteByIdCascade(Integer id) throws InvalidRequestException, InternalDAOException {
 		deleteByIdsListCascade(Arrays.asList(id));
 	}
 
@@ -260,7 +311,7 @@ public abstract class EntityAbstractDAO<T extends Identifiable> implements Entit
 	public abstract void fillPrepStatementWithResultSet(T entity, PreparedStatement ps, boolean skipNull)
 			throws SQLException;
 
-	public abstract T createEntityByResultSet(ResultSet rs) throws SQLException, DAOException;
+	public abstract T createEntityByResultSet(ResultSet rs) throws SQLException;
 
 	public abstract boolean[] getNullAttributesStates(T entity);
 

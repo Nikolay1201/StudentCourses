@@ -69,13 +69,18 @@ public class Controller extends HttpServlet {
 		} catch(NotAllowedException e) {
 			log.debug("not allowed", e);
 			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-			request.setAttribute(ContextParams.Session.ERROR_MESSAGE,
+			request.setAttribute(ContextParams.Request.ERROR_MESSAGE,
 					ErrorMessages.Authorization.NOT_ALLOWED);
 		} catch(ControllerException e) {
 			log.error("internal error", e);
+			if (e.getMessage().isBlank()) {
+				request.setAttribute(ContextParams.Request.ERROR_MESSAGE,
+						ErrorMessages.INTERNAL_ERROR);
+			} else {
+				request.setAttribute(ContextParams.Request.ERROR_MESSAGE,
+						e.getMessage());
+			}
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			request.setAttribute(ContextParams.Session.ERROR_MESSAGE,
-					ErrorMessages.INTERNAL_ERROR);
 		}
 		request.getRequestDispatcher("/WEB-INF/" + JspPaths.ERROR + ".jsp").forward(request, response);
 	}

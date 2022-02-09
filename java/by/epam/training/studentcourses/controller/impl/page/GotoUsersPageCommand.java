@@ -38,6 +38,7 @@ public class GotoUsersPageCommand implements Command {
 		} catch (by.epam.training.studentcourses.controller.exception.InvalidRequestException e) {
 			
 		}
+		request.removeAttribute(ContextParams.Request.ENTITIES_LIST);
 		request.setAttribute(ContextParams.Request.ENTITIES_LIST, userList);
 		return JspPaths.USERS;
 	}
