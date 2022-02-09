@@ -4,35 +4,35 @@ import by.epam.training.studentcourses.util.Identifiable;
 
 public class CoursePlan implements Identifiable {
 	private Integer id;
-	private Course course;
-	private User trainer;
+	private Integer courseId;
+	private Integer trainerUserId;
 	private CoursePlanStatus status;
 	private String description;
 	
-	public CoursePlan(Integer id, Course course, User trainer, CoursePlanStatus status, String description) {
+	public CoursePlan(Integer id, Integer courseId, Integer trainerUserId, CoursePlanStatus status, String description) {
 		this.id = id;
-		this.course = course;
-		this.trainer = trainer;
+		this.courseId = courseId;
+		this.trainerUserId = trainerUserId;
 		this.status = status;
 		this.description = description;
 	}
 
 	public CoursePlan() { }
 
-	public Course getCourse() {
-		return course;
+	public Integer getCourseId() {
+		return courseId;
 	}
 
-	public void setCourse(Course course) {
-		this.course = course;
+	public void setCourseId(Integer courseId) {
+		this.courseId = courseId;
 	}
 
-	public User getTrainer() {
-		return trainer;
+	public Integer getTrainerUserId() {
+		return trainerUserId;
 	}
 
-	public void setTrainer(User trainer) {
-		this.trainer = trainer;
+	public void setTrainerId(Integer trainerUserId) {
+		this.trainerUserId = trainerUserId;
 	}
 
 	public CoursePlanStatus getStatus() {

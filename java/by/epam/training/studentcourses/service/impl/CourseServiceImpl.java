@@ -6,7 +6,9 @@ import java.util.List;
 import by.epam.training.studentcourses.dao.DAOFactory;
 import by.epam.training.studentcourses.service.CourseService;
 import by.epam.training.studentcourses.service.ValidatorFactory;
-import by.epam.training.studentcourses.service.exception.ServiceException;
+import by.epam.training.studentcourses.service.exception.InternalServiceException;
+import by.epam.training.studentcourses.service.exception.InvalidEntitiesException;
+import by.epam.training.studentcourses.service.exception.NotAllowedException;
 import by.epam.training.studentcourses.util.Filter;
 import by.epam.training.studentcourses.util.entity.Course;
 import by.epam.training.studentcourses.util.entity.User;
@@ -25,7 +27,7 @@ public class CourseServiceImpl extends EntityCRUDAbstractService<Course> impleme
 	}
 	
 	@Override 
-	public void add(User user, List<Course> coursesList) throws ServiceException {
+	public void add(User user, List<Course> coursesList) throws InternalServiceException, NotAllowedException, InvalidEntitiesException {
 		for (Course c : coursesList) {
 			c.setCreationTime(LocalDateTime.now());
 		}

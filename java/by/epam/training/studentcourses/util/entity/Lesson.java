@@ -6,7 +6,7 @@ import by.epam.training.studentcourses.util.Identifiable;
 
 public class Lesson implements Identifiable {
 	private Integer id;
-	private CoursePlan coursePlan;
+	private Integer coursePlanId;
 	private LocalDateTime startDateTime;
 	private Integer durationInMin;
 	private Integer classroomNumber;
@@ -14,23 +14,23 @@ public class Lesson implements Identifiable {
 	
 	public Lesson() {}
 	
-	public Lesson(Integer id, CoursePlan coursePlan, LocalDateTime startDateTime, Integer durationInMin,
+	public Lesson(Integer id, Integer coursePlan, LocalDateTime startDateTime, Integer durationInMin,
 			Integer classroomNumber, Boolean isCompleted) {
 		super();
 		this.id = id;
-		this.coursePlan = coursePlan;
+		this.coursePlanId = coursePlan;
 		this.startDateTime = startDateTime;
 		this.durationInMin = durationInMin;
 		this.classroomNumber = classroomNumber;
 		this.isCompleted = isCompleted;
 	}
 
-	public CoursePlan getCoursePlan() {
-		return coursePlan;
+	public Integer getCoursePlanId() {
+		return coursePlanId;
 	}
 	
-	public void setCoursePlan(CoursePlan coursePlan) {
-		this.coursePlan = coursePlan;
+	public void setCoursePlanId(Integer coursePlanId) {
+		this.coursePlanId = coursePlanId;
 	}
 	
 	public LocalDateTime getStartTime() {

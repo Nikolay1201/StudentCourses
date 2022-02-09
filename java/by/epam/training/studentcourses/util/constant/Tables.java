@@ -91,7 +91,7 @@ public class Tables {
 		private CoursesPlans() {}
 		
 		public enum Attr implements TableAttr {
-			COURSE_PLAN_ID("course_plan_id"),
+			ID("course_plan_id"),
 			COURSE_ID("course_id"),
 			TRAINER_USER_ID("trainer_id"),
 			STATUS_ID("status_id"),

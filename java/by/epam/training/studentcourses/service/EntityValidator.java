@@ -1,9 +1,11 @@
 package by.epam.training.studentcourses.service;
 
+import java.util.List;
+
 import by.epam.training.studentcourses.util.TableAttr;
 
 public interface EntityValidator<T> {
 	
-	TableAttr validate(T entitity);
+	List<TableAttr> validate(T entitity, boolean skipNull);
 	
 }

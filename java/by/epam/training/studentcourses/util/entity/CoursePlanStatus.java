@@ -12,7 +12,7 @@ public enum CoursePlanStatus {
 	private int value;
 	
 	private CoursePlanStatus(int value) {
-		this.value = value;
+		this.value = value;	
 	}
 	
 	public int getValue() {

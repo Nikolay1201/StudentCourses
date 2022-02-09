@@ -39,11 +39,11 @@ public class StudentsHaveCoursesPlans implements Identifiable {
 		this.coursePlanId = coursePlanId;
 	}
 
-	public Integer getStudentId() {
+	public Integer getStudentUserId() {
 		return studentId;
 	}
 
-	public void setStudentId(Integer studentId) {
+	public void setStudentUserId(Integer studentId) {
 		this.studentId = studentId;
 	}
 
