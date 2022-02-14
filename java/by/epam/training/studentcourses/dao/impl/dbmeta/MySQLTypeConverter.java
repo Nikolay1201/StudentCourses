@@ -68,6 +68,9 @@ public class MySQLTypeConverter {
 	}	
 	
 	public static LocalDate toInternalDate(Date date) {
+		if (date == null) {
+			return null;
+		}
 		return date.toLocalDate();
 	}
 	

@@ -35,9 +35,11 @@ public class PrepStHelper {
 				ps.setTimestamp(j + 1, MySQLTypeConverter.toMySQLDateTime((LocalDateTime) obj[i]));
 			} else if (obj[i].getClass() == LocalDate.class) {
 				ps.setDate(j + 1, MySQLTypeConverter.toMySQLDate((LocalDate) obj[i]));
+			} else if (obj[i].getClass() == Boolean.class) {
+				ps.setBoolean(j + 1, MySQLTypeConverter.toMySQLBool((Boolean) obj[i]));
 			} else {
 				throw new IllegalArgumentException(
-						DBErrorMessages.getUnsupportedTypeEncounderedMessage(obj.getClass().getName()));
+						DBErrorMessages.getUnsupportedTypeEncounderedMessage(obj[i].getClass().getName()));
 			}
 			j++;
 		}

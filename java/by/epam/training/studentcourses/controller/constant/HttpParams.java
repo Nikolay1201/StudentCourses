@@ -13,16 +13,6 @@ public class HttpParams {
 		public static final String PASSWORD = "password";
 	}
 	
-	public class Cookies {
-		
-	}
-	
-	public class Operation {
-		public static final String CREATE = "add";
-		public static final String UPDATE = "add";
-		public static final String DELETE = "add";
-	}
-	
 	public class StatusCode {
 		public static final int SC_UNPROCESSABLE_ENITIY = 422;
 	}
@@ -31,5 +21,7 @@ public class HttpParams {
 	public static final String OPERATION_TYPE = "optype";
 	public static final String ENTITY_TYPE = "entity";	
 	public static final String ENTITY_ID = "id";	
+	public static final String SELECT_MODE = "selectMode";
+	public static final String SHOW_ONLY_MINE = "onlyMine";
 	
 }

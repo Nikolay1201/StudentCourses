@@ -64,7 +64,7 @@ public abstract class EntityAbstractDAO<T extends Identifiable> implements Entit
 					log.debug(ps);
 					ps.addBatch();
 				}
-				try {
+				try {	
 					ps.executeBatch();
 				} catch (SQLException e) {
 					switch (e.getErrorCode()) {
@@ -129,6 +129,7 @@ public abstract class EntityAbstractDAO<T extends Identifiable> implements Entit
 					entity = createEntityByResultSet(rs);
 					entityList.add(entity);
 				}
+				conn.commit();
 				return entityList;
 			} finally {
 				if (rs != null) {

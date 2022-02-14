@@ -11,8 +11,11 @@ import org.apache.logging.log4j.Logger;
 import by.epam.training.studentcourses.controller.Command;
 import by.epam.training.studentcourses.controller.EntityParser;
 import by.epam.training.studentcourses.controller.constant.ContextParams;
+import by.epam.training.studentcourses.controller.constant.HttpParams;
 import by.epam.training.studentcourses.controller.constant.JspPaths;
+import by.epam.training.studentcourses.controller.exception.ControllerException;
 import by.epam.training.studentcourses.controller.exception.InternalControllerException;
+import by.epam.training.studentcourses.controller.exception.NotAllowedException;
 import by.epam.training.studentcourses.controller.impl.EntityParserImpl;
 import by.epam.training.studentcourses.service.ServiceFactory;
 import by.epam.training.studentcourses.service.UserService;
@@ -27,7 +30,12 @@ public class GotoUsersPageCommand implements Command {
 	private static final EntityParser parser = EntityParserImpl.getInstance();
 
 	@Override
-	public String execute(HttpServletRequest request, HttpServletResponse response) throws InternalControllerException {
+	public String execute(HttpServletRequest request, HttpServletResponse response) throws ControllerException {
+		User user = (User)request.getSession().getAttribute(ContextParams.Session.USER);
+		request.setAttribute(ContextParams.Request.SELECT_MODE, request.getParameter(HttpParams.SELECT_MODE));
+		if (user == null) {
+			throw new NotAllowedException();
+		}
 		List<User> userList = null;
 		try {
 			Filter filter = parser.parseFilter(request.getParameterMap());

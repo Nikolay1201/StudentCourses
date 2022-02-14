@@ -25,6 +25,7 @@ import by.epam.training.studentcourses.controller.impl.dynamic.UpdateEntityComma
 import by.epam.training.studentcourses.controller.impl.page.GotoCoursesPageCommand;
 import by.epam.training.studentcourses.controller.impl.page.GotoCoursesPlansPageCommand;
 import by.epam.training.studentcourses.controller.impl.page.GotoIndexPageCommand;
+import by.epam.training.studentcourses.controller.impl.page.GotoLessonsPageCommand;
 import by.epam.training.studentcourses.controller.impl.page.GotoLoginPageCommand;
 import by.epam.training.studentcourses.controller.impl.page.GotoProfilePageCommand;
 import by.epam.training.studentcourses.controller.impl.page.GotoSandCPageCommand;
@@ -35,6 +36,7 @@ import by.epam.training.studentcourses.service.Service;
 import by.epam.training.studentcourses.service.ServiceFactory;
 import by.epam.training.studentcourses.util.entity.Course;
 import by.epam.training.studentcourses.util.entity.CoursePlan;
+import by.epam.training.studentcourses.util.entity.Lesson;
 import by.epam.training.studentcourses.util.entity.StudentsHaveCoursesPlans;
 import by.epam.training.studentcourses.util.entity.User;
 
@@ -57,6 +59,7 @@ public class Invoker {
 		commandMap.put("GET/page" + JspPaths.COURSES, new GotoCoursesPageCommand());
 		commandMap.put("GET/page" + JspPaths.COURSES_PLANS, new GotoCoursesPlansPageCommand());
 		commandMap.put("GET/page" + JspPaths.STUDENTS_AND_COURSES_PLANS, new GotoSandCPageCommand());
+		commandMap.put("GET/page" + JspPaths.LESSONS, new GotoLessonsPageCommand());
 
 		// dynamic
 		commandMap.put("GET/data" + DataAccessCommands.AUTH, new AuthenticationCommand());
@@ -155,6 +158,30 @@ public class Invoker {
 						return parser.parseStudentsHaveCoursesPlans(paramsMap);
 					}
 				});
+		
+		commandMap.put("GET/data" + DataAccessCommands.ADD_LESSON,
+				new AddEntityCommand<Lesson>(service.getLessonService()) {
+					@Override
+					public List<Lesson> parseEntities(Map paramsMap) throws InvalidRequestException {
+						return parser.parseLessons(paramsMap);
+					}
+				});
+		commandMap.put("GET/data" + DataAccessCommands.UPDATE_LESSON,
+				new UpdateEntityCommand<Lesson>(service.getLessonService()) {
+					@Override
+					public List<Lesson> parseEntities(Map paramsMap) throws InvalidRequestException {
+						return parser.parseLessons(paramsMap);
+					}
+				});
+		commandMap.put("GET/data" + DataAccessCommands.DELETE_LESSON,
+				new DeleteEntityByIdCommand<Lesson>(service.getLessonService()) {
+
+					@Override
+					protected List<Lesson> parseEntities(Map paramsMap)
+							throws InvalidRequestException {
+						return parser.parseLessons(paramsMap);
+					}
+				});		
 
 	}
 

@@ -19,14 +19,24 @@ public class CoursePlanDAOImpl extends EntityAbstractDAO<CoursePlan> implements 
 
 	@Override
 	public boolean validateEntityForInsert(CoursePlan coursePlan) {
-		return coursePlan.getCourseId() != null && coursePlan.getTrainerUserId() != null && coursePlan.getStatus() != null;
+		return coursePlan.getCourseId() != null &&
+				coursePlan.getTrainerUserId() != null &&
+				coursePlan.getStatus() != null &&
+				coursePlan.getStartDate() != null;
+				
 	}
 
 	@Override
 	public void fillPrepStatementWithResultSet(CoursePlan coursePlan, PreparedStatement ps, boolean skipNull)
 			throws SQLException {
-		PrepStHelper.fill(ps, skipNull, new Object[] { coursePlan.getId(), coursePlan.getCourseId(),
-				coursePlan.getTrainerUserId(), coursePlan.getStatus().getValue(), coursePlan.getDescription() });
+		PrepStHelper.fill(ps, skipNull, new Object[] { 
+				coursePlan.getId(), 
+				coursePlan.getCourseId(),
+				coursePlan.getTrainerUserId(), 
+				coursePlan.getStatus().getValue(), 
+				coursePlan.getStartDate(),
+				coursePlan.getDescription() 
+				});
 	}
 
 //	@Override
@@ -61,6 +71,8 @@ public class CoursePlanDAOImpl extends EntityAbstractDAO<CoursePlan> implements 
 				MySQLTypeConverter.toInternalInt(rs.getInt(Tables.CoursesPlans.Attr.TRAINER_USER_ID.getAttrName())));
 		coursePlan.setStatus(CoursePlanStatus.getByVal(
 				MySQLTypeConverter.toInternalInt(rs.getInt(Tables.CoursesPlans.Attr.STATUS_ID.getAttrName()))));
+		coursePlan.setStartDate(
+				MySQLTypeConverter.toInternalDate(rs.getDate(Tables.CoursesPlans.Attr.START_DATE.getAttrName())));
 		coursePlan.setDescription(
 				MySQLTypeConverter.toInternalString(rs.getString(Tables.CoursesPlans.Attr.DESCRIPTION.getAttrName())));
 		return coursePlan;
@@ -68,8 +80,14 @@ public class CoursePlanDAOImpl extends EntityAbstractDAO<CoursePlan> implements 
 
 	@Override
 	public boolean[] getNullAttributesStates(CoursePlan coursePlan) {
-		return new boolean[] { coursePlan.getId() == null, coursePlan.getCourseId() == null,
-				coursePlan.getTrainerUserId() == null, coursePlan.getStatus() == null, coursePlan.getDescription() == null, };
+		return new boolean[] { 
+				coursePlan.getId() == null, 
+				coursePlan.getCourseId() == null,
+				coursePlan.getTrainerUserId() == null, 
+				coursePlan.getStatus() == null, 
+				coursePlan.getStartDate() == null,
+				coursePlan.getDescription() == null, 
+				};
 	}
 
 }

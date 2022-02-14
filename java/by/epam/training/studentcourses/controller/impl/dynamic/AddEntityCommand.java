@@ -23,6 +23,7 @@ import by.epam.training.studentcourses.controller.impl.EntityParserImpl;
 import by.epam.training.studentcourses.service.EntityCRUDService;
 import by.epam.training.studentcourses.service.exception.InternalServiceException;
 import by.epam.training.studentcourses.service.exception.InvalidEntitiesException;
+import by.epam.training.studentcourses.service.exception.NoSuchEntityException;
 import by.epam.training.studentcourses.service.exception.NotAllowedException;
 import by.epam.training.studentcourses.util.TableAttr;
 import by.epam.training.studentcourses.util.entity.User;
@@ -43,14 +44,15 @@ public abstract class AddEntityCommand<T> implements Command {
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ControllerException, IOException {
 		List<T> entitiesList = parseEntities(request.getParameterMap());
-		if (!entitiesList.isEmpty())
+		if (!entitiesList.isEmpty()) {
 			log.debug("new course: {}", entitiesList.get(0));
+		}
 		try {
-			service.add((User) request.getSession().getAttribute(ContextParams.Session.USER), entitiesList);
+			service.add((User) request.getSession().getAttribute(ContextParams.Session.USER), entitiesList.get(0));
 		} catch (InvalidEntitiesException e) {
 			StringBuilder errorMessage = new StringBuilder(ErrorMessages.EntityCRUD.INVALID_PARAMETERS);
 			errorMessage.append("<br>");
-			if (!e.getInvalidAttrsLists().isEmpty()) {
+			if (!e.getInvalidAttrsLists().isEmpty())  {
 				for (TableAttr attr : e.getInvalidAttrsLists().get(0)) {
 					errorMessage.append("- ");
 					errorMessage.append(attr.getAttrName());

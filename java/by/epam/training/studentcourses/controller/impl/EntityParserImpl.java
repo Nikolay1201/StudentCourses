@@ -1,6 +1,7 @@
 package by.epam.training.studentcourses.controller.impl;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -204,6 +205,13 @@ public class EntityParserImpl implements EntityParser {
 			} catch (RuntimeException e) {
 			}
 
+			try {
+				coursePlan.setStartDate(
+						LocalDate.parse(paramsMap.get(Tables.CoursesPlans.Attr.START_DATE.getAttrName())[i]));
+
+			} catch (RuntimeException e) {
+			}
+
 			coursePlansList.add(coursePlan);
 		}
 
@@ -212,8 +220,59 @@ public class EntityParserImpl implements EntityParser {
 
 	@Override
 	public List<Lesson> parseLessons(Map<String, String[]> paramsMap) {
-		// TODO
-		return null;
+		List<Lesson> lessonsList = new ArrayList<>();
+		String[] idsArr = paramsMap.get(Tables.Lessons.Attr.ID.getAttrName());
+		if (idsArr == null) {
+			return lessonsList;
+		}
+		Lesson lesson;
+		for (int i = 0; i < idsArr.length; i++) {
+			lesson = new Lesson();
+
+			try {
+				lesson.setId(Integer.parseInt(paramsMap.get(Tables.Lessons.Attr.ID.getAttrName())[i]));
+			} catch (RuntimeException e) {
+			}
+
+			try {
+				lesson.setCoursePlanId(
+						Integer.parseInt(paramsMap.get(Tables.Lessons.Attr.COURSE_PLAN_ID.getAttrName())[i]));
+			} catch (RuntimeException e) {
+			}
+
+			try {
+				lesson.setStartTime(
+						LocalDateTime.parse(paramsMap.get(Tables.Lessons.Attr.START_TIME.getAttrName())[i]));
+			} catch (RuntimeException e) {
+			}
+
+			try {
+				lesson.setDuration(Integer.valueOf(paramsMap.get(Tables.Lessons.Attr.DURATION.getAttrName())[i]));
+			} catch (RuntimeException e) {
+			}
+
+			try {
+				lesson.setClassroomNumber(
+						Integer.valueOf(paramsMap.get(Tables.Lessons.Attr.CLASSROOM_NUMBER.getAttrName())[i]));
+			} catch (RuntimeException e) {
+			}
+
+			try {
+				lesson.setCompleted(
+						Boolean.parseBoolean(paramsMap.get(Tables.Lessons.Attr.IS_COMPLETED.getAttrName())[i]));
+			} catch (RuntimeException e) {
+			}
+
+			try {
+				lesson.setRemarks(paramsMap.get(Tables.Lessons.Attr.REMARKS.getAttrName())[0]);
+			} catch (RuntimeException e) {
+			}
+
+			lessonsList.add(lesson);
+		}
+
+		return lessonsList;
+
 	}
 
 	@Override

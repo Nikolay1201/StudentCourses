@@ -1,5 +1,6 @@
 package by.epam.training.studentcourses.controller.impl.page;
 
+import java.util.Enumeration;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 import by.epam.training.studentcourses.controller.Command;
 import by.epam.training.studentcourses.controller.EntityParser;
 import by.epam.training.studentcourses.controller.constant.ContextParams;
+import by.epam.training.studentcourses.controller.constant.HttpParams;
 import by.epam.training.studentcourses.controller.constant.JspPaths;
 import by.epam.training.studentcourses.controller.exception.InternalControllerException;
 import by.epam.training.studentcourses.controller.impl.EntityParserImpl;
@@ -31,7 +33,10 @@ public class GotoCoursesPageCommand implements Command {
 	public String execute(HttpServletRequest request, HttpServletResponse response) throws InternalControllerException {
 		List<Course> courseList = null;
 		List<Course> myCoursesList = null;
+		List<String> coursesNamesList = null;
+		List<String> usersNamesList = null;
 		User user = (User)request.getSession().getAttribute(ContextParams.Session.USER);
+		request.setAttribute(ContextParams.Request.SELECT_MODE, request.getParameter(HttpParams.SELECT_MODE));
 		try {
 			Filter filter = parser.parseFilter(request.getParameterMap());
 			log.debug(filter);
@@ -40,6 +45,10 @@ public class GotoCoursesPageCommand implements Command {
 			throw new InternalControllerException(e);
 		} catch (by.epam.training.studentcourses.controller.exception.InvalidRequestException e) {
 			
+		}
+		Enumeration<String> attrNamesEnum = request.getAttributeNames();
+		while (attrNamesEnum.hasMoreElements()) {
+			System.out.println("attr name: " + attrNamesEnum.nextElement());
 		}
 		request.removeAttribute(ContextParams.Request.ENTITIES_LIST);
 		request.setAttribute(ContextParams.Request.ENTITIES_LIST, courseList);

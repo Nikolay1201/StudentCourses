@@ -30,9 +30,21 @@ public class Controller extends HttpServlet {
 
 	@Override
 	public void init() {
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			@Override 
+			public void run()  {
+				try {
+					service.close();
+				} catch (ServiceException e) { }
+			}
+		});
 		try {
 			super.init();
 			ServletContext sc = getServletContext();
+			sc.setAttribute(ContextParams.Servlet.LOCALSTORAGE_PARAM_ENTITY_ID,
+					ContextParams.Servlet.LOCALSTORAGE_PARAM_ENTITY_ID);
+			sc.setAttribute(ContextParams.Servlet.LOCALSTORAGE_PARAM_ENTITY_DESCR,
+					ContextParams.Servlet.LOCALSTORAGE_PARAM_ENTITY_DESCR);
 			Configurator.setRootLevel(Level.TRACE);
 			Invoker.init();
 			service.init();
@@ -53,32 +65,30 @@ public class Controller extends HttpServlet {
 	}
 
 	@Override
-	protected void service(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+	protected void service(HttpServletRequest request, HttpServletResponse response)
+			throws IOException, ServletException {
 		log.trace("{}?{}", request.getRequestURL(), request.getQueryString());
 		for (Map.Entry<String, String[]> entry : request.getParameterMap().entrySet()) {
 			log.trace("{}: {}", entry.getKey(), entry.getValue()[0]);
 		}
 		try {
-			String jspPath = Invoker.execute(
-					request.getMethod() + request.getServletPath() + request.getPathInfo(), request, response);
+			String jspPath = Invoker.execute(request.getMethod() + request.getServletPath() + request.getPathInfo(),
+					request, response);
 			log.debug("jsp path: {}", jspPath);
 			if (jspPath != null) {
 				request.getRequestDispatcher("/WEB-INF/" + jspPath + ".jsp").forward(request, response);
 			}
 			return;
-		} catch(NotAllowedException e) {
+		} catch (NotAllowedException e) {
 			log.debug("not allowed", e);
 			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-			request.setAttribute(ContextParams.Request.ERROR_MESSAGE,
-					ErrorMessages.Authorization.NOT_ALLOWED);
-		} catch(ControllerException e) {
+			request.setAttribute(ContextParams.Request.ERROR_MESSAGE, ErrorMessages.Authorization.NOT_ALLOWED);
+		} catch (ControllerException e) {
 			log.error("internal error", e);
 			if (e.getMessage().isBlank()) {
-				request.setAttribute(ContextParams.Request.ERROR_MESSAGE,
-						ErrorMessages.INTERNAL_ERROR);
+				request.setAttribute(ContextParams.Request.ERROR_MESSAGE, ErrorMessages.INTERNAL_ERROR);
 			} else {
-				request.setAttribute(ContextParams.Request.ERROR_MESSAGE,
-						e.getMessage());
+				request.setAttribute(ContextParams.Request.ERROR_MESSAGE, e.getMessage());
 			}
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}

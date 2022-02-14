@@ -4,18 +4,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import by.epam.training.studentcourses.dao.EntityDAOFactory;
 import by.epam.training.studentcourses.dao.LessonDAO;
 import by.epam.training.studentcourses.dao.impl.dbmeta.MySQLTypeConverter;
-import by.epam.training.studentcourses.util.Filter;
-import by.epam.training.studentcourses.util.FiltrationType;
 import by.epam.training.studentcourses.util.constant.Tables;
 import by.epam.training.studentcourses.util.entity.Lesson;
 
 public class LessonDAOImpl extends EntityAbstractDAO<Lesson> implements LessonDAO {
 
 	public LessonDAOImpl() {
-		super(Tables.Lessons.TABLE_NAME, Tables.Lessons.Attr.values(), Tables.Lessons.Attr.LESSON_ID);
+		super(Tables.Lessons.TABLE_NAME, Tables.Lessons.Attr.values(), Tables.Lessons.Attr.ID);
 	}
 
 	@Override
@@ -23,7 +20,6 @@ public class LessonDAOImpl extends EntityAbstractDAO<Lesson> implements LessonDA
 		return lesson.getCoursePlanId() != null &&
 		lesson.getStartTime() != null &&
 		lesson.getDuration() != null &&
-		lesson.getClassroomNumber() != null &&
 		lesson.isCompleted() != null;
 	}
 
@@ -37,6 +33,7 @@ public class LessonDAOImpl extends EntityAbstractDAO<Lesson> implements LessonDA
 			lesson.getDuration(),
 			lesson.getClassroomNumber(),
 			lesson.isCompleted(),
+			lesson.getRemarks()
 			}		
 		);
 		
@@ -45,7 +42,7 @@ public class LessonDAOImpl extends EntityAbstractDAO<Lesson> implements LessonDA
 	@Override
 	public Lesson createEntityByResultSet(ResultSet rs) throws SQLException {
 		Lesson lesson = new Lesson();
-		lesson.setId(MySQLTypeConverter.toInternalInt(rs.getInt(Tables.Lessons.Attr.LESSON_ID.getAttrName())));
+		lesson.setId(MySQLTypeConverter.toInternalInt(rs.getInt(Tables.Lessons.Attr.ID.getAttrName())));
 		lesson.setCoursePlanId(
 				MySQLTypeConverter.toInternalInt(rs.getInt(Tables.Lessons.Attr.COURSE_PLAN_ID.getAttrName())));
 		lesson.setStartTime(
@@ -55,6 +52,8 @@ public class LessonDAOImpl extends EntityAbstractDAO<Lesson> implements LessonDA
 				MySQLTypeConverter.toInternalInt(rs.getInt(Tables.Lessons.Attr.CLASSROOM_NUMBER.getAttrName())));
 		lesson.setCompleted(
 				MySQLTypeConverter.toInternalBool(rs.getBoolean(Tables.Lessons.Attr.IS_COMPLETED.getAttrName())));
+		lesson.setRemarks(
+				MySQLTypeConverter.toInternalString(rs.getString(Tables.Lessons.Attr.REMARKS.getAttrName())));
 
 		return lesson;
 	}
@@ -68,6 +67,7 @@ public class LessonDAOImpl extends EntityAbstractDAO<Lesson> implements LessonDA
 			lesson.getDuration() == null,
 			lesson.getClassroomNumber() == null,
 			lesson.isCompleted() == null,
+			lesson.getRemarks() == null,
 		};
 	}
 	

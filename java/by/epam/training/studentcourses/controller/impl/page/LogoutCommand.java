@@ -9,7 +9,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import by.epam.training.studentcourses.controller.Command;
-import by.epam.training.studentcourses.controller.constant.ContextParams;
 import by.epam.training.studentcourses.controller.constant.JspPaths;
 import by.epam.training.studentcourses.controller.exception.ControllerException;
 import by.epam.training.studentcourses.controller.impl.dynamic.AuthenticationCommand;
@@ -23,7 +22,7 @@ public class LogoutCommand implements Command {
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ControllerException, IOException {
-		request.getSession().removeAttribute(ContextParams.Session.USER);
+		request.getSession().invalidate();
 		return JspPaths.LOGIN;
 	}
 
