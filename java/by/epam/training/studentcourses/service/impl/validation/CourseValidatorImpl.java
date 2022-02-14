@@ -2,7 +2,6 @@ package by.epam.training.studentcourses.service.impl.validation;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import by.epam.training.studentcourses.service.EntityValidator;
 import by.epam.training.studentcourses.util.TableAttr;

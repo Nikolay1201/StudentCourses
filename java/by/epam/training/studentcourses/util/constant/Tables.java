@@ -95,6 +95,7 @@ public class Tables {
 			COURSE_ID("course_id"),
 			TRAINER_USER_ID("trainer_id"),
 			STATUS_ID("status_id"),
+			START_DATE("start_date"),
 			DESCRIPTION("description");
 			
 			private String attrName;
@@ -116,8 +117,8 @@ public class Tables {
 		private Lessons() {}
 		
 		public enum Attr implements TableAttr {
-			LESSON_ID("lesson_id"),
-			COURSE_PLAN_ID("courses_plan"),
+			ID("lesson_id"),
+			COURSE_PLAN_ID("courses_plan_id"),
 			START_TIME("start_time"),
 			DURATION("duration"),
 			CLASSROOM_NUMBER("classroom_number"),

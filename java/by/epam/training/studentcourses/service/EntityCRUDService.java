@@ -15,7 +15,8 @@ public interface EntityCRUDService<T> {
 	void add(User user, List<T> entitiesList)
 			throws InternalServiceException, NotAllowedException, InvalidEntitiesException;
 
-	void add(User user, T entity) throws InternalServiceException, NotAllowedException, InvalidEntitiesException;
+	void add(User user, T entity)
+			throws InternalServiceException, NotAllowedException, InvalidEntitiesException;
 
 	List<T> getByFilter(User user, Filter filter)
 			throws InternalServiceException, NotAllowedException, InvalidRequestException;
@@ -24,9 +25,10 @@ public interface EntityCRUDService<T> {
 			throws InvalidRequestException, InternalServiceException, NoSuchEntityException, NotAllowedException;
 
 	void update(User user, List<T> entitiesList)
-			throws InvalidEntitiesException, InternalServiceException, NotAllowedException;
+			throws InvalidEntitiesException, InternalServiceException, NotAllowedException, NoSuchEntityException;
 
-	void update(User user, T entity) throws InvalidEntitiesException, InternalServiceException, NotAllowedException;
+	void update(User user, T entity)
+			throws InvalidEntitiesException, InternalServiceException, NotAllowedException, NoSuchEntityException;
 
 	void deleteByIdsList(User user, List<Integer> entitiesList)
 			throws InvalidRequestException, NotAllowedException, InternalServiceException;

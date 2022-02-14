@@ -16,18 +16,28 @@ import by.epam.training.studentcourses.util.entity.UserRole;
 
 public class CourseServiceImpl extends EntityCRUDAbstractService<Course> implements CourseService {
 	
-	public CourseServiceImpl() {
-		init(DAOFactory.getInstance().getCourseDAO(), ValidatorFactory.getCourseValidator(),
-				new CRUDAuthorizator<>(UserRole.ADMIN, UserRole.TRAINER) {
-			@Override
-			public void getByFilter(User user, Filter filter) {
-				return;
-			}
-		});
+	private static CourseService instance = new CourseServiceImpl(); 
+	
+	public static CourseService getInstance() {
+		return instance;
 	}
 	
-	@Override 
-	public void add(User user, List<Course> coursesList) throws InternalServiceException, NotAllowedException, InvalidEntitiesException {
+	private CourseServiceImpl() {
+		init(DAOFactory.getInstance().getCourseDAO(), ValidatorFactory.getCourseValidator(),
+				new CRUDAuthorizator<>(UserRole.ADMIN, UserRole.TRAINER) {
+			
+					@Override
+					public void getByFilter(User user, Filter filter) { }
+					
+					@Override
+					public void getById(User user, Integer id) { } 
+					
+				});
+	}
+
+	@Override
+	public void add(User user, List<Course> coursesList)
+			throws InternalServiceException, NotAllowedException, InvalidEntitiesException {
 		for (Course c : coursesList) {
 			c.setCreationTime(LocalDateTime.now());
 		}
@@ -38,6 +48,5 @@ public class CourseServiceImpl extends EntityCRUDAbstractService<Course> impleme
 	public List<Course> getCoursesOfUser(User user, User userWithCoursesRequired) {
 		return null;
 	}
-	
-}
 
+}

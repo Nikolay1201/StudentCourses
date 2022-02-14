@@ -28,7 +28,7 @@ public abstract class EntityCRUDAbstractService<T extends Identifiable> implemen
 	protected EntityValidator<T> validator;
 	protected CRUDAuthorizator<T> authorizator;
 	
-	protected void validateForAdd(List<T> entitiesList) throws InvalidEntitiesException {
+	protected void validateForAdd(List<T> entitiesList) throws InvalidEntitiesException, InternalServiceException {
 		List<List<TableAttr>> invalidAttrLists = new ArrayList<>();
 		for (int i = 0; i < entitiesList.size(); i++) {
 			List<TableAttr> invalidAttrsList = validator.validate(entitiesList.get(i), false);
@@ -77,10 +77,10 @@ public abstract class EntityCRUDAbstractService<T extends Identifiable> implemen
 		}
 
 	}
-
+	
 	@Override
 	public void update(User user, List<T> entityList)
-			throws InvalidEntitiesException, InternalServiceException, NotAllowedException {
+			throws InvalidEntitiesException, InternalServiceException, NotAllowedException, NoSuchEntityException {
 		authorizator.update(user, entityList);
 		List<List<TableAttr>> invalidAttrLists = new ArrayList<>();
 		for (int i = 0; i < entityList.size(); i++) {
@@ -137,7 +137,7 @@ public abstract class EntityCRUDAbstractService<T extends Identifiable> implemen
 
 	@Override
 	public void update(User user, T entity)
-			throws InvalidEntitiesException, InternalServiceException, NotAllowedException {
+			throws InvalidEntitiesException, InternalServiceException, NotAllowedException, NoSuchEntityException {
 		update(user, Arrays.asList(entity));
 	}
 

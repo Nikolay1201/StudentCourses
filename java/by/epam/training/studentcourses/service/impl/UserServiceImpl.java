@@ -26,11 +26,17 @@ import by.epam.training.studentcourses.util.entity.SessionToken;
 
 public class UserServiceImpl extends EntityCRUDAbstractService<User> implements UserService {
 
+	private static UserService instance = new UserServiceImpl();
+
 	private UserSessionTokenDAO userSessionTokenDAO = DAOFactory.getInstance().getUserSessionTokenDAO();
 	private UserDAO userDAO = DAOFactory.getInstance().getUserDAO();
 	private Hashing hashing = HashingFactory.getInstance();
 
-	{
+	public static UserService getInstance() {
+		return instance;
+	}
+
+	private UserServiceImpl() {
 		init(userDAO, ValidatorFactory.getUserValidator(), new CRUDAuthorizator<User>(UserRole.ADMIN) {
 
 			@Override
@@ -41,7 +47,8 @@ public class UserServiceImpl extends EntityCRUDAbstractService<User> implements 
 			}
 
 			@Override
-			public void update(User user, User userToUpdate) throws NotAllowedException {
+			public void update(User user, User userToUpdate)
+					throws NotAllowedException, InternalServiceException, NoSuchEntityException {
 				if (!user.getId().equals(userToUpdate.getId())) {
 					super.update(user, userToUpdate);
 				} else {
@@ -66,12 +73,12 @@ public class UserServiceImpl extends EntityCRUDAbstractService<User> implements 
 					throw new NotAllowedException(anythingAllowedRolesList);
 				}
 			}
-			
+
 			@Override
 			public void getByFilter(User user, Filter filter) {
 				return;
 			}
-			
+
 		});
 	}
 
@@ -95,7 +102,7 @@ public class UserServiceImpl extends EntityCRUDAbstractService<User> implements 
 
 	@Override
 	public void update(User user, List<User> usersList)
-			throws InvalidEntitiesException, InternalServiceException, NotAllowedException {
+			throws InvalidEntitiesException, InternalServiceException, NotAllowedException, NoSuchEntityException {
 		for (User u : usersList) {
 			u.setPassword(null);
 		}

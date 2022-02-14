@@ -1,23 +1,25 @@
 package by.epam.training.studentcourses.util.entity;
 
+import java.time.LocalDate;
+
 import by.epam.training.studentcourses.util.Identifiable;
 
 public class CoursePlan implements Identifiable {
+	@Override
+	public String toString() {
+		return "CoursePlan [id=" + id + ", courseId=" + courseId + ", trainerUserId=" + trainerUserId + ", startDate="
+				+ startDate + ", status=" + status + ", description=" + description + "]";
+	}
+
 	private Integer id;
 	private Integer courseId;
 	private Integer trainerUserId;
+	private LocalDate startDate;
 	private CoursePlanStatus status;
 	private String description;
-	
-	public CoursePlan(Integer id, Integer courseId, Integer trainerUserId, CoursePlanStatus status, String description) {
-		this.id = id;
-		this.courseId = courseId;
-		this.trainerUserId = trainerUserId;
-		this.status = status;
-		this.description = description;
-	}
 
-	public CoursePlan() { }
+	public CoursePlan() {
+	}
 
 	public Integer getCourseId() {
 		return courseId;
@@ -55,11 +57,18 @@ public class CoursePlan implements Identifiable {
 	public Integer getId() {
 		return id;
 	}
-	
-	@Override 
+
+	@Override
 	public void setId(Integer id) {
 		this.id = id;
 	}
-		
-	
+
+	public LocalDate getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(LocalDate startDate) {
+		this.startDate = startDate;
+	}
+
 }

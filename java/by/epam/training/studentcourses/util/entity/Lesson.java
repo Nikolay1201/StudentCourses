@@ -10,7 +10,8 @@ public class Lesson implements Identifiable {
 	private LocalDateTime startDateTime;
 	private Integer durationInMin;
 	private Integer classroomNumber;
-	Boolean isCompleted;
+	private Boolean isCompleted;
+	private String remarks;
 	
 	public Lesson() {}
 	
@@ -73,6 +74,14 @@ public class Lesson implements Identifiable {
 	@Override
 	public void setId(Integer id) {
 		this.id = id;
+	}
+
+	public String getRemarks() {
+		return remarks;
+	}
+
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
 	}
 		
 }

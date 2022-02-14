@@ -11,8 +11,6 @@ import by.epam.training.studentcourses.util.entity.Lesson;
 
 public class LessonValidatorImpl implements EntityValidator<Lesson> {
 
-	private static final int MAX_PLANNABLE_PERIOD_IN_MONTHS = 6;
-
 	@Override
 	public List<TableAttr> validate(Lesson lesson, boolean skipNull) {
 		List<TableAttr> invalidAttrList = new ArrayList<>();
@@ -28,11 +26,10 @@ public class LessonValidatorImpl implements EntityValidator<Lesson> {
 	}
 
 	private boolean validateClassroomNumber(Integer classRoomNumber) {
-		return (classRoomNumber >= 100 && classRoomNumber <= 999);
+		return (classRoomNumber >= 0 && classRoomNumber <= 999);
 	}
 
 	private boolean validateStartTime(LocalDateTime startTime) {
-		return (startTime.compareTo(LocalDateTime.now()) >= 0
-				&& startTime.compareTo(LocalDateTime.now().minusMonths(MAX_PLANNABLE_PERIOD_IN_MONTHS)) <= 0);
+		return (startTime.compareTo(LocalDateTime.now()) >= 0);
 	}
 }

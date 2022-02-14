@@ -14,11 +14,12 @@ import by.epam.training.studentcourses.service.exception.ServiceException;
 public class ServiceImpl implements Service {
 	
 	private DAO dao = DAOFactory.getInstance();
-	private UserService userService = new UserServiceImpl();
-	private CourseService courseService = new CourseServiceImpl();
-	private CoursePlanService coursePlanService = new CoursePlanServiceImpl();
+	private UserService userService = UserServiceImpl.getInstance();
+	private CourseService courseService = CourseServiceImpl.getInstance();
+	private CoursePlanService coursePlanService = CoursePlanServiceImpl.getInstance();
 	private StudentsHaveCoursesPlansService studentsHaveCoursesPlansService = 
-			new StudentsHaveCoursesPlansServiceImpl();
+			StudentsHaveCoursesPlansServiceImpl.getInstance();
+	private LessonService lessonService = LessonServiceImpl.getInstance();
 
 	@Override
 	public void init() throws ServiceException {
@@ -60,6 +61,6 @@ public class ServiceImpl implements Service {
 
 	@Override
 	public LessonService getLessonService() {
-		return null;
+		return lessonService;
 	}
 }
