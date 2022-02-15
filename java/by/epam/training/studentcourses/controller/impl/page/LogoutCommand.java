@@ -23,7 +23,7 @@ public class LogoutCommand implements Command {
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ControllerException, IOException {
 		request.getSession().invalidate();
-		return JspPaths.LOGIN;
+		return JspPaths.INDEX;
 	}
 
 }

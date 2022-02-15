@@ -12,10 +12,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import by.epam.training.studentcourses.controller.constant.DataAccessCommands;
-import by.epam.training.studentcourses.controller.constant.ErrorMessages;
 import by.epam.training.studentcourses.controller.constant.JspPaths;
 import by.epam.training.studentcourses.controller.exception.ControllerException;
 import by.epam.training.studentcourses.controller.exception.InvalidRequestException;
+import by.epam.training.studentcourses.controller.exception.ResourseNotFoundException;
+import by.epam.training.studentcourses.controller.impl.ErrorMessages;
 import by.epam.training.studentcourses.controller.impl.dynamic.AddEntityCommand;
 import by.epam.training.studentcourses.controller.impl.dynamic.AuthenticationCommand;
 import by.epam.training.studentcourses.controller.impl.dynamic.ChangeLocaleCommand;
@@ -28,7 +29,7 @@ import by.epam.training.studentcourses.controller.impl.page.GotoIndexPageCommand
 import by.epam.training.studentcourses.controller.impl.page.GotoLessonsPageCommand;
 import by.epam.training.studentcourses.controller.impl.page.GotoLoginPageCommand;
 import by.epam.training.studentcourses.controller.impl.page.GotoProfilePageCommand;
-import by.epam.training.studentcourses.controller.impl.page.GotoSandCPageCommand;
+import by.epam.training.studentcourses.controller.impl.page.GotoStudentsHaveCPPageCommand;
 import by.epam.training.studentcourses.controller.impl.page.GotoTestPageCommand;
 import by.epam.training.studentcourses.controller.impl.page.GotoUsersPageCommand;
 import by.epam.training.studentcourses.controller.impl.page.LogoutCommand;
@@ -55,14 +56,14 @@ public class Invoker {
 		commandMap.put("GET/page" + JspPaths.LOGIN, new GotoLoginPageCommand());
 		commandMap.put("GET/page" + JspPaths.PROFILE, new GotoProfilePageCommand());
 		commandMap.put("GET/page" + JspPaths.USERS, new GotoUsersPageCommand());
-		commandMap.put("GET/page" + JspPaths.LOGOUT, new LogoutCommand());
 		commandMap.put("GET/page" + JspPaths.COURSES, new GotoCoursesPageCommand());
 		commandMap.put("GET/page" + JspPaths.COURSES_PLANS, new GotoCoursesPlansPageCommand());
-		commandMap.put("GET/page" + JspPaths.STUDENTS_AND_COURSES_PLANS, new GotoSandCPageCommand());
+		commandMap.put("GET/page" + JspPaths.STUDENTS_AND_COURSES_PLANS, new GotoStudentsHaveCPPageCommand());
 		commandMap.put("GET/page" + JspPaths.LESSONS, new GotoLessonsPageCommand());
 
 		// dynamic
 		commandMap.put("GET/data" + DataAccessCommands.AUTH, new AuthenticationCommand());
+		commandMap.put("GET/data" + DataAccessCommands.LOGOUT, new LogoutCommand());
 		commandMap.put("GET/data" + DataAccessCommands.CHANGE_LOCALE, new ChangeLocaleCommand());
 		commandMap.put("POST/data/file", new GetFileCommand());
 
@@ -88,7 +89,6 @@ public class Invoker {
 					}
 
 				});
-
 		commandMap.put("GET/data" + DataAccessCommands.ADD_COURSE,
 				new AddEntityCommand<Course>(service.getCourseService()) {
 					@Override
@@ -111,7 +111,6 @@ public class Invoker {
 						return parser.parseCourses(paramsMap);
 					}
 				});
-		
 		commandMap.put("GET/data" + DataAccessCommands.ADD_COURSE_PLAN,
 				new AddEntityCommand<CoursePlan>(service.getCoursePlanService()) {
 					@Override
@@ -134,7 +133,6 @@ public class Invoker {
 						return parser.parseCoursePlans(paramsMap);
 					}
 				});
-		
 		commandMap.put("GET/data" + DataAccessCommands.ADD_USER_TO_COURSEPLAN,
 				new AddEntityCommand<StudentsHaveCoursesPlans>(service.getStudentsHaveCoursesPlansService()) {
 					@Override
@@ -158,7 +156,6 @@ public class Invoker {
 						return parser.parseStudentsHaveCoursesPlans(paramsMap);
 					}
 				});
-		
 		commandMap.put("GET/data" + DataAccessCommands.ADD_LESSON,
 				new AddEntityCommand<Lesson>(service.getLessonService()) {
 					@Override
@@ -166,6 +163,7 @@ public class Invoker {
 						return parser.parseLessons(paramsMap);
 					}
 				});
+		
 		commandMap.put("GET/data" + DataAccessCommands.UPDATE_LESSON,
 				new UpdateEntityCommand<Lesson>(service.getLessonService()) {
 					@Override
@@ -188,9 +186,11 @@ public class Invoker {
 	public static String execute(String commandName, HttpServletRequest request, HttpServletResponse response)
 			throws ControllerException, IOException {
 		log.trace("command: {}", commandName);
+		ErrorMessages err = new ErrorMessages(request);
 		Command command = commandMap.get(commandName);
 		if (command == null) {
-			throw new InvalidRequestException(ErrorMessages.PAGE_NOT_FOUND);
+			log.debug("not found: {}", commandName);
+			throw new ResourseNotFoundException();
 		}
 		return command.execute(request, response);
 	}

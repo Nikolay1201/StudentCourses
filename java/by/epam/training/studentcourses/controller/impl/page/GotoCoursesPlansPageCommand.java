@@ -15,13 +15,14 @@ import by.epam.training.studentcourses.controller.constant.ContextParams;
 import by.epam.training.studentcourses.controller.constant.HttpParams;
 import by.epam.training.studentcourses.controller.constant.JspPaths;
 import by.epam.training.studentcourses.controller.exception.ControllerException;
+import by.epam.training.studentcourses.controller.exception.InternalControllerException;
+import by.epam.training.studentcourses.controller.exception.InvalidRequestException;
 import by.epam.training.studentcourses.controller.exception.NotAllowedException;
-import by.epam.training.studentcourses.controller.impl.EntityParserImpl;
+import by.epam.training.studentcourses.controller.impl.dynamic.EntityParserImpl;
 import by.epam.training.studentcourses.service.CoursePlanService;
 import by.epam.training.studentcourses.service.CourseService;
-import by.epam.training.studentcourses.service.ServiceFactory;
 import by.epam.training.studentcourses.service.UserService;
-import by.epam.training.studentcourses.service.exception.ServiceException;
+import by.epam.training.studentcourses.service.exception.NoSuchEntityException;
 import by.epam.training.studentcourses.util.Filter;
 import by.epam.training.studentcourses.util.constant.Tables;
 import by.epam.training.studentcourses.util.entity.Course;
@@ -31,9 +32,9 @@ import by.epam.training.studentcourses.util.entity.User;
 public class GotoCoursesPlansPageCommand implements Command {
 
 	private static final Logger log = LogManager.getLogger(GotoCoursesPlansPageCommand.class);
-	private static final CoursePlanService coursePlanService = ServiceFactory.getInstance().getCoursePlanService();
-	private static final UserService userSerivce = ServiceFactory.getInstance().getUserService();
-	private static final CourseService courseService = ServiceFactory.getInstance().getCourseService();
+	private static final CoursePlanService coursePlanService = service.getCoursePlanService();
+	private static final UserService userSerivce = service.getUserService();
+	private static final CourseService courseService = service.getCourseService();
 	private static final EntityParser parser = EntityParserImpl.getInstance();
 
 	@Override
@@ -57,7 +58,8 @@ public class GotoCoursesPlansPageCommand implements Command {
 				}
 			}
 
-			if (request.getSession().getAttribute(ContextParams.Session.SHOW_ONLY_MY_COURSES_PLANS) != null) {
+			if (request.getSession().getAttribute(ContextParams.Session.SHOW_ONLY_MY_COURSES_PLANS) != null
+					&& user != null) {
 				switch (user.getRole()) {
 				case STUDENT:
 					coursesPlansList = coursePlanService.getStudentCoursePlans(user, user, filter);
@@ -66,7 +68,7 @@ public class GotoCoursesPlansPageCommand implements Command {
 					coursesPlansList = coursePlanService.getTrainerCoursePlans(user, user, filter);
 					break;
 				default:
-					throw new NotAllowedException();
+					coursesPlansList = coursePlanService.getByFilter(user, filter);
 				}
 			} else {
 				coursesPlansList = coursePlanService.getByFilter(user, filter);
@@ -75,28 +77,31 @@ public class GotoCoursesPlansPageCommand implements Command {
 			User trainer;
 			coursesNamesList = new LinkedList<>();
 			trainersNamesList = new LinkedList<>();
-			for (int i = 0; i < coursesPlansList.size(); i++) {
-				course = courseService.getById(user, coursesPlansList.get(i).getCourseId());
-				coursesNamesList.add(course.getName());
-				trainer = userSerivce.getByFilter(user,
-						new Filter(Tables.Users.Attr.USER_ID, coursesPlansList.get(i).getTrainerUserId().toString()))
-						.get(0);
-				trainersNamesList.add(
-						String.format("%s %s %s", trainer.getSurename(), trainer.getName(), trainer.getPatronymic()));
+			try {
+				for (int i = 0; i < coursesPlansList.size(); i++) {
+					course = courseService.getById(user, coursesPlansList.get(i).getCourseId());
+					coursesNamesList.add(course.getName());
+					trainer = userSerivce.getByFilter(user, new Filter(Tables.Users.Attr.USER_ID,
+							coursesPlansList.get(i).getTrainerUserId().toString())).get(0);
+					trainersNamesList.add(String.format("%s %s %s", trainer.getSurename(), trainer.getName(),
+							trainer.getPatronymic()));
+				}
+			} catch (NoSuchEntityException e) {
+				throw new InvalidRequestException(e);
 			}
-		} catch (ServiceException e) {
-			throw new ControllerException(e);
-		} catch (by.epam.training.studentcourses.controller.exception.InvalidRequestException e) {
-			log.debug(e);
+			request.setAttribute(ContextParams.Request.ENTITIES_LIST, coursesPlansList);
+			request.setAttribute(ContextParams.Request.STUDENT_COURSES_PLANS_LIST, coursesPlansList);
+			request.setAttribute(ContextParams.Request.COURSES_NAMES_LIST, coursesNamesList);
+			request.setAttribute(ContextParams.Request.TRAINERS_NAMES_LIST, trainersNamesList);
+			return JspPaths.COURSES_PLANS;
+		} catch (by.epam.training.studentcourses.service.exception.InvalidRequestException e) {
+			throw new InvalidRequestException(e);
+		} catch (by.epam.training.studentcourses.service.exception.NotAllowedException e) {
+			throw new NotAllowedException(e.getAllowedRolesList(), e);
+		} catch (by.epam.training.studentcourses.service.exception.InternalServiceException e) {
+			throw new InternalControllerException(e);
 		}
 
-//		request.removeAttribute(ContextParams.Request.ENTITIES_LIST);
-//		request.removeAttribute(ContextParams.Request.MY_COURSES_PLANS_LIST);
-		request.setAttribute(ContextParams.Request.ENTITIES_LIST, coursesPlansList);
-		request.setAttribute(ContextParams.Request.STUDENT_COURSES_PLANS_LIST, coursesPlansList);
-		request.setAttribute(ContextParams.Request.COURSES_NAMES_LIST, coursesNamesList);
-		request.setAttribute(ContextParams.Request.TRAINERS_NAMES_LIST, trainersNamesList);
-		return JspPaths.COURSES_PLANS;
 	}
 
 }

@@ -14,7 +14,8 @@ public class HttpParams {
 	}
 	
 	public class StatusCode {
-		public static final int SC_UNPROCESSABLE_ENITIY = 422;
+		public static final int UNPROCESSABLE_ENITIY = 422;
+		public static final int UNKNOWN_ERROR = 520;
 	}
 	
 	public static final String LANG = "lang";

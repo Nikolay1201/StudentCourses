@@ -17,7 +17,6 @@ import by.epam.training.studentcourses.controller.exception.ControllerException;
 import by.epam.training.studentcourses.controller.exception.InternalControllerException;
 import by.epam.training.studentcourses.controller.exception.InvalidRequestException;
 import by.epam.training.studentcourses.controller.exception.NotAllowedException;
-import by.epam.training.studentcourses.controller.impl.EntityParserImpl;
 import by.epam.training.studentcourses.service.EntityCRUDService;
 import by.epam.training.studentcourses.service.exception.InternalServiceException;
 import by.epam.training.studentcourses.util.Identifiable;
@@ -45,7 +44,7 @@ public abstract class DeleteEntityByIdCommand<T extends Identifiable> implements
 			service.deleteById((User) request.getSession().getAttribute(ContextParams.Session.USER),
 					entitiesList.get(0).getId());
 		} catch (by.epam.training.studentcourses.service.exception.NotAllowedException e) {
-			throw new NotAllowedException(e);
+			throw new NotAllowedException(e.getAllowedRolesList(), e);
 		} catch (by.epam.training.studentcourses.service.exception.InvalidRequestException e) {
 			throw new InvalidRequestException(e);
 		} catch (InternalServiceException e) {

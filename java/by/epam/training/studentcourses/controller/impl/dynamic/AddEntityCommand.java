@@ -13,17 +13,14 @@ import org.apache.logging.log4j.Logger;
 import by.epam.training.studentcourses.controller.Command;
 import by.epam.training.studentcourses.controller.EntityParser;
 import by.epam.training.studentcourses.controller.constant.ContextParams;
-import by.epam.training.studentcourses.controller.constant.ErrorMessages;
 import by.epam.training.studentcourses.controller.constant.HttpParams;
-import by.epam.training.studentcourses.controller.constant.JspPaths;
 import by.epam.training.studentcourses.controller.exception.ControllerException;
 import by.epam.training.studentcourses.controller.exception.InternalControllerException;
 import by.epam.training.studentcourses.controller.exception.InvalidRequestException;
-import by.epam.training.studentcourses.controller.impl.EntityParserImpl;
+import by.epam.training.studentcourses.controller.impl.ErrorMessages;
 import by.epam.training.studentcourses.service.EntityCRUDService;
 import by.epam.training.studentcourses.service.exception.InternalServiceException;
 import by.epam.training.studentcourses.service.exception.InvalidEntitiesException;
-import by.epam.training.studentcourses.service.exception.NoSuchEntityException;
 import by.epam.training.studentcourses.service.exception.NotAllowedException;
 import by.epam.training.studentcourses.util.TableAttr;
 import by.epam.training.studentcourses.util.entity.User;
@@ -31,8 +28,8 @@ import by.epam.training.studentcourses.util.entity.User;
 public abstract class AddEntityCommand<T> implements Command {
 
 	private static Logger log = LogManager.getLogger(AddEntityCommand.class);
-	private final EntityCRUDService<T> service;
 	protected static final EntityParser parser = EntityParserImpl.getInstance();
+	private final EntityCRUDService<T> service;
 
 	protected AddEntityCommand(EntityCRUDService<T> service) {
 		this.service = service;
@@ -43,6 +40,7 @@ public abstract class AddEntityCommand<T> implements Command {
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response)
 			throws ControllerException, IOException {
+		ErrorMessages err = new ErrorMessages(request);
 		List<T> entitiesList = parseEntities(request.getParameterMap());
 		if (!entitiesList.isEmpty()) {
 			log.debug("new course: {}", entitiesList.get(0));
@@ -50,7 +48,7 @@ public abstract class AddEntityCommand<T> implements Command {
 		try {
 			service.add((User) request.getSession().getAttribute(ContextParams.Session.USER), entitiesList.get(0));
 		} catch (InvalidEntitiesException e) {
-			StringBuilder errorMessage = new StringBuilder(ErrorMessages.EntityCRUD.INVALID_PARAMETERS);
+			StringBuilder errorMessage = new StringBuilder(err.invalidRequest(null));
 			errorMessage.append("<br>");
 			if (!e.getInvalidAttrsLists().isEmpty())  {
 				for (TableAttr attr : e.getInvalidAttrsLists().get(0)) {
@@ -59,11 +57,10 @@ public abstract class AddEntityCommand<T> implements Command {
 					errorMessage.append("<br>");
 				}
 			}
-			response.setStatus(HttpParams.StatusCode.SC_UNPROCESSABLE_ENITIY);
-			request.setAttribute(ContextParams.Request.ERROR_MESSAGE, errorMessage);
-			return JspPaths.ERROR;
+			response.setStatus(HttpParams.StatusCode.UNPROCESSABLE_ENITIY);
+			response.getWriter().write(errorMessage.toString());			
 		} catch (NotAllowedException e) {
-			throw new by.epam.training.studentcourses.controller.exception.NotAllowedException(e);
+			throw new by.epam.training.studentcourses.controller.exception.NotAllowedException(e.getAllowedRolesList(), e);
 		} catch (InternalServiceException e) {
 			throw new InternalControllerException(e);
 		}	

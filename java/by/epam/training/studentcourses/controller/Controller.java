@@ -15,10 +15,15 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 
 import by.epam.training.studentcourses.controller.constant.ContextParams;
-import by.epam.training.studentcourses.controller.constant.ErrorMessages;
+import by.epam.training.studentcourses.controller.constant.HttpParams;
 import by.epam.training.studentcourses.controller.constant.JspPaths;
 import by.epam.training.studentcourses.controller.exception.ControllerException;
+import by.epam.training.studentcourses.controller.exception.InternalControllerException;
+import by.epam.training.studentcourses.controller.exception.InvalidRequestException;
 import by.epam.training.studentcourses.controller.exception.NotAllowedException;
+import by.epam.training.studentcourses.controller.exception.NotAuthorizedException;
+import by.epam.training.studentcourses.controller.exception.ResourseNotFoundException;
+import by.epam.training.studentcourses.controller.impl.ErrorMessages;
 import by.epam.training.studentcourses.service.Service;
 import by.epam.training.studentcourses.service.ServiceFactory;
 import by.epam.training.studentcourses.service.exception.ServiceException;
@@ -41,10 +46,10 @@ public class Controller extends HttpServlet {
 		try {
 			super.init();
 			ServletContext sc = getServletContext();
-			sc.setAttribute(ContextParams.Servlet.LOCALSTORAGE_PARAM_ENTITY_ID,
-					ContextParams.Servlet.LOCALSTORAGE_PARAM_ENTITY_ID);
-			sc.setAttribute(ContextParams.Servlet.LOCALSTORAGE_PARAM_ENTITY_DESCR,
-					ContextParams.Servlet.LOCALSTORAGE_PARAM_ENTITY_DESCR);
+//			sc.setAttribute(ContextParams.Servlet.LOCALSTORAGE_PARAM_ENTITY_ID,
+//					ContextParams.Servlet.LOCALSTORAGE_PARAM_ENTITY_ID);
+//			sc.setAttribute(ContextParams.Servlet.LOCALSTORAGE_PARAM_ENTITY_DESCR,
+//					ContextParams.Servlet.LOCALSTORAGE_PARAM_ENTITY_DESCR);
 			Configurator.setRootLevel(Level.TRACE);
 			Invoker.init();
 			service.init();
@@ -67,10 +72,17 @@ public class Controller extends HttpServlet {
 	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ServletException {
+		ErrorMessages err = new ErrorMessages(request);
+		String errorMessage = err.unknownError();
 		log.trace("{}?{}", request.getRequestURL(), request.getQueryString());
+		StringBuilder str = new StringBuilder();
 		for (Map.Entry<String, String[]> entry : request.getParameterMap().entrySet()) {
-			log.trace("{}: {}", entry.getKey(), entry.getValue()[0]);
+			str.append("\n");
+			str.append(entry.getKey());
+			str.append(": ");
+			str.append(entry.getValue()[0]);
 		}
+		log.trace(str);
 		try {
 			String jspPath = Invoker.execute(request.getMethod() + request.getServletPath() + request.getPathInfo(),
 					request, response);
@@ -80,19 +92,32 @@ public class Controller extends HttpServlet {
 			}
 			return;
 		} catch (NotAllowedException e) {
-			log.debug("not allowed", e);
+			log.debug(e);
 			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-			request.setAttribute(ContextParams.Request.ERROR_MESSAGE, ErrorMessages.Authorization.NOT_ALLOWED);
-		} catch (ControllerException e) {
-			log.error("internal error", e);
-			if (e.getMessage().isBlank()) {
-				request.setAttribute(ContextParams.Request.ERROR_MESSAGE, ErrorMessages.INTERNAL_ERROR);
-			} else {
-				request.setAttribute(ContextParams.Request.ERROR_MESSAGE, e.getMessage());
-			}
+			errorMessage = err.notAllowed(e.getAllowedRolesList());
+		} catch (NotAuthorizedException e) {
+			log.debug(e);
+			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+			errorMessage = err.notAuthorized();
+		} catch (ResourseNotFoundException e) {
+			log.debug(e);
+			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			errorMessage = err.pageNotFound();
+		} catch (InvalidRequestException e) {
+			log.debug(e);
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			errorMessage = err.invalidRequest(e.getMessage());
+		} catch (InternalControllerException e) {
+			log.error(e);
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			errorMessage = err.internalError();
+		} catch (ControllerException e) {
+			log.warn(e);
+			response.setStatus(HttpParams.StatusCode.UNKNOWN_ERROR);
+			errorMessage = err.unknownError();
 		}
-		request.getRequestDispatcher("/WEB-INF/" + JspPaths.ERROR + ".jsp").forward(request, response);
+		request.setAttribute(ContextParams.Request.Error.MESSAGE, errorMessage);
+		request.getRequestDispatcher("/WEB-INF" + JspPaths.ERROR + ".jsp").forward(request, response);
 	}
 
 }

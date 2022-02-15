@@ -3,6 +3,7 @@ package by.epam.training.studentcourses.controller.constant;
 public class DataAccessCommands {
 	public static final String CHANGE_LOCALE = "/lang";
 	public static final String AUTH = "/auth";
+	public static final String LOGOUT = "/logout";
 	
 	public static final String ADD_USER = "/adduser";
 	public static final String UPDATE_USER = "/changeuser";

@@ -1,6 +1,5 @@
 package by.epam.training.studentcourses.controller.impl.page;
 
-import java.util.Enumeration;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,10 +14,10 @@ import by.epam.training.studentcourses.controller.constant.ContextParams;
 import by.epam.training.studentcourses.controller.constant.HttpParams;
 import by.epam.training.studentcourses.controller.constant.JspPaths;
 import by.epam.training.studentcourses.controller.exception.InternalControllerException;
-import by.epam.training.studentcourses.controller.impl.EntityParserImpl;
+import by.epam.training.studentcourses.controller.exception.InvalidRequestException;
+import by.epam.training.studentcourses.controller.exception.NotAllowedException;
+import by.epam.training.studentcourses.controller.impl.dynamic.EntityParserImpl;
 import by.epam.training.studentcourses.service.CourseService;
-import by.epam.training.studentcourses.service.ServiceFactory;
-import by.epam.training.studentcourses.service.exception.ServiceException;
 import by.epam.training.studentcourses.util.Filter;
 import by.epam.training.studentcourses.util.entity.Course;
 import by.epam.training.studentcourses.util.entity.User;
@@ -26,33 +25,28 @@ import by.epam.training.studentcourses.util.entity.User;
 public class GotoCoursesPageCommand implements Command {
 
 	private static final Logger log = LogManager.getLogger(GotoCoursesPageCommand.class);
-	private static final CourseService courseService = ServiceFactory.getInstance().getCourseService();
+	private static final CourseService courseService = service.getCourseService();
 	private static final EntityParser parser = EntityParserImpl.getInstance();
 
 	@Override
-	public String execute(HttpServletRequest request, HttpServletResponse response) throws InternalControllerException {
+	public String execute(HttpServletRequest request, HttpServletResponse response)
+			throws InternalControllerException, InvalidRequestException, NotAllowedException {
 		List<Course> courseList = null;
-		List<Course> myCoursesList = null;
-		List<String> coursesNamesList = null;
-		List<String> usersNamesList = null;
-		User user = (User)request.getSession().getAttribute(ContextParams.Session.USER);
+		User user = (User) request.getSession().getAttribute(ContextParams.Session.USER);
 		request.setAttribute(ContextParams.Request.SELECT_MODE, request.getParameter(HttpParams.SELECT_MODE));
 		try {
 			Filter filter = parser.parseFilter(request.getParameterMap());
 			log.debug(filter);
 			courseList = courseService.getByFilter(user, filter);
-		} catch (ServiceException e) {
+			request.setAttribute(ContextParams.Request.ENTITIES_LIST, courseList);
+			return JspPaths.COURSES;
+		} catch (by.epam.training.studentcourses.service.exception.InvalidRequestException e) {
+			throw new InvalidRequestException(e);
+		} catch (by.epam.training.studentcourses.service.exception.NotAllowedException e) {
+			throw new NotAllowedException(e.getAllowedRolesList(), e);
+		} catch (by.epam.training.studentcourses.service.exception.InternalServiceException e) {
 			throw new InternalControllerException(e);
-		} catch (by.epam.training.studentcourses.controller.exception.InvalidRequestException e) {
-			
 		}
-		Enumeration<String> attrNamesEnum = request.getAttributeNames();
-		while (attrNamesEnum.hasMoreElements()) {
-			System.out.println("attr name: " + attrNamesEnum.nextElement());
-		}
-		request.removeAttribute(ContextParams.Request.ENTITIES_LIST);
-		request.setAttribute(ContextParams.Request.ENTITIES_LIST, courseList);
-		return JspPaths.COURSES;
 	}
 
 }

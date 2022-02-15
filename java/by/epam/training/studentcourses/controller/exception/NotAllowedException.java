@@ -1,29 +1,24 @@
 package by.epam.training.studentcourses.controller.exception;
 
+import java.util.List;
+
+import by.epam.training.studentcourses.util.entity.UserRole;
+
 public class NotAllowedException extends ControllerException {
+	
+	private List<UserRole> allowedRolesList;
 
-	public NotAllowedException() {
-
+	public NotAllowedException(List<UserRole> allowedRolesList) {
+		this.allowedRolesList = allowedRolesList;
 	}
 
-	public NotAllowedException(String message) {
-		super(message);
-
+	public NotAllowedException(List<UserRole> allowedRolesList, Exception e) {
+		super(e);
 	}
 
-	public NotAllowedException(Throwable cause) {
-		super(cause);
-
+	public List<UserRole> getAllowedRolesList() {
+		return allowedRolesList;
 	}
 
-	public NotAllowedException(String message, Throwable cause) {
-		super(message, cause);
-
-	}
-
-	public NotAllowedException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-		super(message, cause, enableSuppression, writableStackTrace);
-
-	}
 
 }

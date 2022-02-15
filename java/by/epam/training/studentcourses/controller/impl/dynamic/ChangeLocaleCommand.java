@@ -1,5 +1,7 @@
 package by.epam.training.studentcourses.controller.impl.dynamic;
 
+import java.util.Locale;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -18,16 +20,13 @@ public class ChangeLocaleCommand implements Command {
 
 	@Override
 	public String execute(HttpServletRequest request, HttpServletResponse response) throws ControllerException {
-		String newLang = request.getParameter(HttpParams.LANG);
-		if (newLang == null) {
+		String newLangName = request.getParameter(HttpParams.LANG);
+		if (newLangName == null) {
 			throw new InvalidRequestException();
 		}
-		request.getSession().setAttribute(ContextParams.Session.LANG, newLang);
-		//String appName = (String)request.getServletContext().getAttribute(ContextParams.Servlet.APP_NAME);
-		//String currentURLRel = new URL(request.getHeader("referer")).getPath().substring(appName.length() + 7);	
-		//log.debug("current url : {}", currentURLRel);
+		request.getSession().setAttribute(ContextParams.Session.LOCALE, new Locale(newLangName));
+		log.debug("new lang: {}", newLangName);
 		return null;
-
 	}
 
 }

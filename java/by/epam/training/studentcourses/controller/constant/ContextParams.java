@@ -8,19 +8,19 @@ public class ContextParams {
 		return instance;
 	}
 
-	public class Servlet {
-		public static final String STD_ERROR_MESSAGE = "stderrmessage";
-		public static final String APP_NAME = "appname";
-		public static final String LOCALSTORAGE_PARAM_ENTITY_ID = "entityId";
-		public static final String LOCALSTORAGE_PARAM_ENTITY_DESCR = "entityDescr";
-	}
-
 	public class Session {
+		public class Locale {
+			public static final String LANG_RU = "ru";
+			public static final String LANG_EN = "en";
+		}
+
+		public static final String LOCALE = "locale";
 		public static final String USER = "user";
 		public static final String LOGIN = HttpParams.Authentification.LOGIN;
-		public static final String LANG = HttpParams.LANG;
+		public static final String MESSAGES = "messages";
 		public static final String SHOW_ONLY_MY_COURSES_PLANS = "onlyMyCoursesPlans";
 		public static final String SHOW_ONLY_MY_LESSONS = "onlyMyLessons";
+
 	}
 
 	public class Request {
@@ -38,8 +38,11 @@ public class ContextParams {
 		public static final String STUDENTS_NAMES_LIST = "studentsNamesList";
 		public static final String COURSES_PLANS_NAMES_LIST = "coursesPlansNamesList";
 
-		public static final String ERROR_MESSAGE = "errmessage";
-	}
+		public class Error {
+			public static final String TITLE = "errmessagetitle";
+			public static final String MESSAGE = "errmessage";
+		}
 
+	}
 
 }
