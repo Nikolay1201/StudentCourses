@@ -1,0 +1,16 @@
+<div id="error_message_box">
+	<style>
+		#error_message_box {
+			background-color: brown;
+			border: 7px solid grey;
+			display: none;
+		}
+		
+		#close_error_message_button {
+			float: right;
+		}
+</style>
+	<div id="error_message">${errmessage}</div>
+	<button id="close_error_message_button"
+	onclick="document.getElementById('error_message_box').remove();">---X---</button>
+</div>

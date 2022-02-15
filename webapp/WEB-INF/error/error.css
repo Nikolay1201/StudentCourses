@@ -1,0 +1,13 @@
+#main {
+	display: flex;
+	justify-content: center;
+	margin: 15% 20% 0 20%;
+	
+	background-color: brown;
+	border: 7px solid grey;
+	
+}
+
+#close_error_message_button {
+	float: right;
+}

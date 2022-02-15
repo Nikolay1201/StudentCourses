@@ -1,0 +1,29 @@
+#header {
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 40px;
+	background-color: grey;
+	margin-bottom: 10px;
+}
+
+.header_link {
+	display: inline-block;
+	height: 80%;
+	right: 0px;
+	border: 1px solid black;
+	margin: 3px;
+	padding: 2px;
+}
+
+.user_info {
+	margin-right: 30px;
+}
+
+.right {
+	float: right;
+}
+
+#goto_profile_link {
+	float: right;
+}

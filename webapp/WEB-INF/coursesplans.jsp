@@ -9,10 +9,11 @@
 <html>
 	<head>
 		<style>
-			<%@ include file="common/static/general.css" %>
-			<%@ include file="common/static/coursesplans.css" %>
+			<%@ include file="static/general.css" %>
+			<%@ include file="static/coursesplans.css" %>
 		</style>
 		<script>
+
 			let form;
 			let confirm_button;
 			let password_tr;
@@ -27,18 +28,29 @@
 				}
 			}
 			
+			function addToLocalStorage(id) {
+				localStorage.setItem("entity_id", id);
+			}
+			
+			let inputfieldBeingSelected;
+			window.addEventListener("storage", () => {
+				inputfieldBeingSelected.value = localStorage.getItem("entity_id");
+			});
+			
 			function fillForm(tr_id) {
 				row = document.getElementById(tr_id);
 				document.getElementById("id_inputfield").value = 
-					row.getElementsByClassName("course_plan_id")[0].innerHTML;
+					parseInt(row.getElementsByClassName("course_plan_id")[0].innerHTML);
 				document.getElementById("course_id_inputfield").value = 
-					row.getElementsByClassName("course_id")[0].firstElementChild.innerText;
+					parseInt(row.getElementsByClassName("course_id")[0].firstElementChild.innerText);
 				document.getElementById("trainer_user_id_inputfield").value = 
-					row.getElementsByClassName("trainer_user_id")[0].firstElementChild.innerText;
+					parseInt(row.getElementsByClassName("trainer_user_id")[0].firstElementChild.innerText);
 				document.getElementById("status_select").value = 
 					row.getElementsByClassName("status")[0].getAttribute("data-value");
 				document.getElementById("description_inputfield").value = 
 					row.getElementsByClassName("description")[0].innerHTML;
+				document.getElementById("start_date_inputfield").value = 
+					row.getElementsByClassName("start_date")[0].innerHTML;
 				
 				confirm_button.innerHTML = "<fmt:message key="action.saveChanges"/>";
 				form.action = "<c:url value="/data/changecourseplan"/>";
@@ -63,11 +75,23 @@
 					p.append("t", "=");
 					p.append("v", id_input_value);
 				}
+				course_id_input_value = document.getElementById("course_id_filter_input").value;
+				if (course_id_input_value.length != 0) {
+					p.append("k", "course_id");
+					p.append("t", "=");
+					p.append("v", course_id_input_value);
+				}
+				<c:if test="${not empty user.role}">
+					isOnlyMine = document.getElementById("mode_checkbox");
+					p.append("onlyMine", isOnlyMine.checked);
+				</c:if>
+				<c:if test="${selectMode eq 'modalwin'}"> 
+					p.append("selectMode", "modalwin");
+				</c:if>
 				location.search = p.toString();
 			}
 			
 			function addUserToCoursePlan(tr_id) {
-				alert("ok");
 				row = document.getElementById(tr_id);
 				//row.style.display="none";
 				p = new URLSearchParams();
@@ -78,12 +102,14 @@
 				xhr.send();
 			}
 			
-			function findCourseModal() {
-				window.open("<c:url value="/page/courses"/>", 'Find a course', 'location=yes');
+			function findCourseModal(inputFieldId) {
+				inputfieldBeingSelected = document.getElementById(inputFieldId);
+				window.open("<c:url value="/page/courses?selectMode=modalwin"/>", 'Find a course', 'location=yes');
 			}
 			
-			function finTrainerModal() {
-				window.open("<c:url value="/page/users"/>", 'Find a trainer', 'location=yes');
+			function findTrainerModal() {
+				inputfieldBeingSelected = document.getElementById("trainer_user_id_inputfield");
+				window.open("<c:url value="/page/users?selectMode=modalwin"/>", 'Find a trainer', 'location=yes');
 			}
 			
 			<c:if test="${user.role.getId() == 1}">
@@ -106,24 +132,30 @@
 		</script>
 	</head>
 	<body>
-		<jsp:include page="common/header.jsp"/>
-		<c:if test="${user.role.getId() == 1}">
+	<c:if test="${selectMode ne 'modalwin'}">
+		<jsp:include page="common/header.jsp" />
+	</c:if>
+	<c:if test="${user.role.getId() == 1 and selectMode ne 'modalwin'}">
 			<div id="form_block">
 				<form id="course_plan_form" method="get" enctype="text/html" action="<c:url value="/data/addcourseplan"/>">
 					<table>
 						<tr>
 							<td><label for="id"><fmt:message key="coursePlan.id"/></label></td>
-							<td><input type="text" name="course_plan_id" id="id_inputfield"><br></td>
+							<td><input type="number" min="0" name="course_plan_id" id="id_inputfield"><br></td>
 						</tr>
 						<tr>
 							<td><label for="course_id"><fmt:message key="coursePlan.courseId"/></label></td>
-							<td><input type="text" name="course_id" id="course_id_inputfield"><br></td>
-							<td><button type="button" onclick="findCourseModal()"><fmt:message key="action.find"/></button></td>
+							<td><input type="number" min="0" name="course_id" id="course_id_inputfield"><br></td>
+							<td><button type="button" onclick="findCourseModal('course_id_inputfield')"><fmt:message key="action.find"/></button></td>
 						</tr>
 						<tr>
 							<td><label for="trainer_user_id"><fmt:message key="coursePlan.trainerUserId"/></label></td>
-							<td><input type="text" name="trainer_id" id="trainer_user_id_inputfield"><br></td>
-							<td><button type="button" onclick="finTrainerModal()"><fmt:message key="action.find"/></button></td>
+							<td><input type="number" min="0" name="trainer_id" id="trainer_user_id_inputfield"><br></td>
+							<td><button type="button" onclick="findTrainerModal()"><fmt:message key="action.find"/></button></td>
+						</tr>
+						<tr>
+							<td><label for="start_date"><fmt:message key="coursePlan.startDate"/></label></td>
+							<td><input type="date" name="start_date" id="start_date_inputfield"><br></td>
 						</tr>
 						<tr>
 							<td><label for="description"><fmt:message key="coursePlan.description"/></label></td>
@@ -150,8 +182,20 @@
 			<table>
 				<tr>
 					<td><label><fmt:message key="filter.id"/></label></td>
-					<td><input type="text" id="id_filter_input"/></td>
+					<td><input type="number" min="0" id="id_filter_input"/></td>
 				</tr>
+				<tr>
+					<td><label><fmt:message key="filter.courseId"/></label></td>
+					<td><input type="number" min="0" id="course_id_filter_input"/></td>
+					<td><button type="button" onclick="findCourseModal('course_id_filter_input')">
+						<fmt:message key="action.find"/></button>
+					</td>
+				</tr>
+				<c:if test="${user.role.getId() == 2 or user.role.getId() == 3}">
+					<label for="mode"><fmt:message key="action.onlyMine"/></label>
+					<input id="mode_checkbox" name="mode" type="checkbox" 
+					<c:if test="${not empty onlyMyCoursesPlans}"> checked</c:if>/>
+				</c:if>
 			</table>
 			<button onclick="findCoursesPlans()"><fmt:message key="action.findCoursesPlans"/></button>
 		</div>
@@ -161,38 +205,56 @@
 					<td><fmt:message key="coursePlan.id"/></td>
 					<td><fmt:message key="coursePlan.courseId"/></td>
 					<td><fmt:message key="coursePlan.trainerUserId"/></td>
-					<td><fmt:message key="coursePlan.status"/></td>		
+					<td><fmt:message key="coursePlan.status"/></td>	
+					<td><fmt:message key="coursePlan.startDate"/></td>			
 					<td><fmt:message key="coursePlan.description"/></td>	
 				</tr>
-				<c:forEach var="coursePlan" items="${entitiesList}">
+				<c:forEach var="coursePlan" items="${entitiesList}" varStatus="loop">
 					<tr id="${coursePlan.id}_tr">
 						<td class="course_plan_id">${coursePlan.id}</td>
 						<td class="course_id">
-							<a href="<c:url value="/page/courses?k=course_id&t=%3D&v=${coursePlan.courseId}"/>">
+							[<a href="<c:url value="/page/courses?k=course_id&t=%3D&v=${coursePlan.courseId}"/>">
 								${coursePlan.courseId}
-							</a>
+							</a>]
+							${coursesNamesList.get(loop.index)}
 						</td>
 						<td class="trainer_user_id">
 							<c:if test="${user.role.getId() == 1}">
-								<a href="<c:url value="/page/users?k=user_id&t=%3D&v=${coursePlan.trainerUserId}"/>">
+								[<a href="<c:url value="/page/users?k=user_id&t=%3D&v=${coursePlan.trainerUserId}"/>">
 									${coursePlan.trainerUserId}
-								</a>
+								</a>]
 							</c:if>
-							<c:if test="${user.role.getId() == 3}">${coursePlan.trainerUserId}</c:if>
+							<c:if test="${user.role.getId() == 3}">[${coursePlan.trainerUserId}]</c:if>
+							${trainersNamesList.get(loop.index)}
 						</td>
 						<td class="status" data-value="${coursePlan.status.getValue()}">${coursePlan.status}</td>
+						<td class="start_date">${coursePlan.startDate}</td>
 						<td class="description">${coursePlan.description}</td>
-						<c:if test="${user.role.getId() == 1}">
-							<td><button onclick="fillForm('${coursePlan.id}_tr')"><fmt:message key="action.edit"/></button>
-							<td><button onclick="deleteCoursePlan('${coursePlan.id}')">X</button></td>	
+						<c:if test="${selectMode ne 'modalwin'}">
+							<c:if test="${user.role.getId() == 1}">
+								<td><button onclick="fillForm('${coursePlan.id}_tr')"><fmt:message key="action.edit"/></button>
+								<td><button onclick="deleteCoursePlan('${coursePlan.id}')">X</button></td>	
+							</c:if>
+							<c:if test="${user.role.getId() == 3}">
+								<td><button onclick="addUserToCoursePlan('${coursePlan.id}_tr')">WANNA THIS</button></td>	
+							</c:if>
+							<c:if test="${user.role.getId() == 2}">
+								<td>
+									<a href="<c:url value="/page/lessons?k=courses_plan_id&t=%3D&v=${coursePlan.id}"/>">
+											<fmt:message key="link.gotoLessons" />
+									</a>
+								</td>
+							</c:if>
 						</c:if>
-						<c:if test="${user.role.getId() == 3}">
-							<td><button onclick="addUserToCoursePlan('${coursePlan.id}_tr')">WANNA THIS</button></td>	
+						<c:if test="${selectMode eq 'modalwin'}"> 
+							<td><button onclick="addToLocalStorage(${coursePlan.id})">
+							<fmt:message key="action.select"/></button>
 						</c:if>
+
 					</tr>
 				</c:forEach>
 			</table>
 		</div>
-		<%@ include file="common/static/footer.html" %>
+		<%@ include file="common/footer.html" %>
 	</body>
 </html>

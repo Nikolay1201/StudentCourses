@@ -9,8 +9,8 @@
 <html>
 	<head>
 		<style>
-			<%@ include file="common/static/general.css" %>
-			<%@ include file="common/static/profile.css" %>
+			<%@ include file="common/general.css" %>
+			<%@ include file="static/profile.css" %>
 		</style>
 	</head>
 	<body>
@@ -49,6 +49,6 @@
 			</table>
 			<br>
 		</div>
-		<%@ include file="common/static/footer.html" %>
+		<%@ include file="common/footer.html" %>
 	</body>
 </html>

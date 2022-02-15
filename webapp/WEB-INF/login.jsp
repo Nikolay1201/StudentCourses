@@ -10,22 +10,26 @@
 	<head>
 		<script>
 			let loginForm;
+			let errorMessage;
 			document.addEventListener("DOMContentLoaded", () => {
 				loginForm = document.getElementById("login_form");
-				
+				errorMessage = document.getElementById('error_message');
 			});
 			let xhr = new XMLHttpRequest();
 			xhr.responseType = "text";
 			xhr.onload = () => {
 				if (xhr.status != 200) {
-					errorMessage = document.createElement("div");
-					errorMessage.innerHTML = xhr.response;
-					document.body.prepend(errorMessage);
+					//errorMessage = document.createElement("div");
+					//errorMessage.innerHTML = xhr.response;
+					//document.body.prepend(errorMessage);
+					errorMessage.innerHtml = xhr.response;
+					
 				} else {
-					window.location.href = '<c:url value="/page/profile"/>';
+					localStorage.setItem("isAuthorized", "true");
+					close();
 				}
-				
 			}
+			
 			function submitLoginForm() {
 				submitForm(loginForm);
 			}
@@ -40,14 +44,23 @@
 			}
 		</script>
 	</head>
-	<body>
-		<form id="login_form">
-			<label for="login"><fmt:message key="login"/></label> 
-			<input type="text" name="login"><br>
-			<label for="password"><fmt:message key="password"/></label>
-			<input type="text" name="password"><br>
-		</form>
-		<button onclick="submitLoginForm()"><fmt:message key="buttons.login"/></button>
-	
-	</body>
+<body>
+	<div id="error_message">		
+	</div>
+	<form id="login_form">
+		<table>
+			<tr>
+				<td><label for="login"><fmt:message key="login" /></label></td>
+				<td><input type="text" name="login"></td>
+			</tr>
+			<tr>
+				<td><label for="password"><fmt:message key="password" /></label></td>
+				<td><input type="text" name="password"></td>
+			</tr>
+		</table>
+	</form>
+	<button onclick="submitLoginForm()">
+		<fmt:message key="buttons.login" />
+	</button>
+</body>
 </html>

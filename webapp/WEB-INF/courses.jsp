@@ -9,8 +9,8 @@
 <html>
 	<head>
 		<style>
-			<%@ include file="common/static/general.css" %>
-			<%@ include file="common/static/courses.css" %>
+			<%@ include file="static/general.css" %>
+			<%@ include file="static/courses.css" %>
 		</style>
 		<script>
 			let form;
@@ -25,6 +25,10 @@
 				} else {
 					location.reload();
 				}
+			}
+			
+			function addToLocalStorage(id) {
+				localStorage.setItem("entity_id", id);
 			}
 			
 			function fillForm(tr_id) {
@@ -96,14 +100,16 @@
 		</script>
 	</head>
 	<body>
-		<jsp:include page="common/header.jsp"/>
-		<c:if test="${user.role.getId() == 1}">
+		<c:if test="${selectMode ne 'modalwin'}">
+			<jsp:include page="common/header.jsp"/>
+		</c:if>
+		<c:if test="${user.role.getId() == 1 and selectMode ne 'modalwin'}">
 			<div id="form_block">
 				<form id="course_form" method="get" enctype="text/html" action="<c:url value="/data/addcourse"/>">
 					<table>
 						<tr>
 							<td><label for="id"><fmt:message key="course.id"/></label></td>
-							<td><input type="text" name="course_id" id="id_inputfield"><br></td>
+							<td><input type="number" min="0" name="course_id" id="id_inputfield"><br></td>
 						</tr>
 						<tr>
 							<td><label for="name"><fmt:message key="course.name"/></label></td>
@@ -126,7 +132,7 @@
 			<table>
 			<tr>
 				<td><label><fmt:message key="filter.id"/></label></td>
-				<td><input type="text" id="id_filter_input"/></td>
+				<td><input type="number" min="0" id="id_filter_input"/></td>
 			</tr>
 			<tr>
 				<td><label><fmt:message key="filter.name"/></label></td>
@@ -155,14 +161,25 @@
 						<td class="name">${course.name}</td>
 						<td class="duration">${course.duration}</td>
 						<td class="description">${course.description}</td>
-						<c:if test="${user.role.getId() == 1}">
-							<td><button onclick="fillForm('${course.id}_tr')"><fmt:message key="action.edit"/></button>
-							<td><button onclick="deleteCourse('${course.id}')">X</button></td>	
+						<c:if test="${selectMode ne 'modalwin'}">
+							<c:if test="${user.role.getId() == 1}">
+								<td><button onclick="fillForm('${course.id}_tr')"><fmt:message key="action.edit"/></button>
+								<td><button onclick="deleteCourse('${course.id}')">X</button></td>	
+							</c:if>
+							<td>
+								<a href="<c:url value="/page/coursesplans?k=course_id&t=%3D&v=${course.id}"/>">
+										<fmt:message key="link.gotoCoursesPlans" />
+								</a>
+							</td>
+						</c:if>
+						<c:if test="${selectMode eq 'modalwin'}">
+							<td><button onclick="addToLocalStorage(${course.id})">
+							<fmt:message key="action.select"/></button>
 						</c:if>
 					</tr>
 				</c:forEach>
 			</table>
 		</div>
-		<%@ include file="common/static/footer.html" %>
+		<%@ include file="common/footer.html" %>
 	</body>
 </html>

@@ -1,0 +1,24 @@
+body {
+	background-color: white;
+}
+
+#filter_block {
+	margin-bottom: 10px;
+}
+
+#form_block {
+	margin-bottom: 30px;
+}
+
+.entity_table {
+	table-layout: fixed;
+	border-collapse: collapse;
+	border: 2px solid black;	
+}
+
+.entity_table td {
+	border: 1px solid black;
+}
+
+
+
