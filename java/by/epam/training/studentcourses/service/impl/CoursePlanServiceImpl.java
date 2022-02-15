@@ -19,7 +19,6 @@ import by.epam.training.studentcourses.util.entity.UserRole;
 
 public class CoursePlanServiceImpl extends EntityCRUDAbstractService<CoursePlan> implements CoursePlanService {
 
-	private static CoursePlanService instance = new CoursePlanServiceImpl();
 	private static StudentsHaveCoursesPlansService studentsHaveCoursesPlansService = StudentsHaveCoursesPlansServiceImpl
 			.getInstance();
 	private static CRUDAuthorizator<CoursePlan> coursesPlansAuthorizator = 
@@ -34,6 +33,8 @@ public class CoursePlanServiceImpl extends EntityCRUDAbstractService<CoursePlan>
 		}
 
 	};
+	
+	private static CoursePlanService instance = new CoursePlanServiceImpl();
 
 	public static CoursePlanService getInstance() {
 		return instance;
