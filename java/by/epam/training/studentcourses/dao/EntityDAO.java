@@ -20,7 +20,6 @@ public interface EntityDAO<T extends Identifiable> {
 	/**
 	 * Adds a list of entities T to the database
 	 * <p>If the list is empty, nothing will happen. 
-	 * <p>
 	 * @param entitiesList - {@code List} of entities being added
 	 * @return list of new IDs of entities added
 	 * @throws InvalidEntityException if any entity from the list turned out to be invalid
